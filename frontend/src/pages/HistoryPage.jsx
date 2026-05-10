@@ -1,11 +1,18 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { CheckCircle2, Clock3, RefreshCw } from 'lucide-react'
+import { CheckCircle2, Clock3, Pencil, RefreshCw, Trash2 } from 'lucide-react'
 
 import PageTopbar from '../components/PageTopbar'
+import { deleteGameSession, renameGameSession } from '../api/sessions'
 import { useAuth } from '../hooks/useAuth'
 import { loadBackendSessions, syncPendingSessions } from '../services/sessionSync'
-import { getUserStorageId, listLocalSessions } from '../utils/gameSessionStorage'
+import {
+  getUserStorageId,
+  listLocalSessions,
+  normalizeSession,
+  removeLocalSession,
+  saveLocalSession,
+} from '../utils/gameSessionStorage'
 
 function formatDateTime(value) {
   if (!value) {
@@ -41,6 +48,11 @@ export default function HistoryPage() {
   const [sessions, setSessions] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [renameTarget, setRenameTarget] = useState(null)
+  const [renameValue, setRenameValue] = useState('')
+  const [deleteTarget, setDeleteTarget] = useState(null)
+  const [modalError, setModalError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
     let isActive = true
@@ -78,6 +90,78 @@ export default function HistoryPage() {
     }
   }, [userId])
 
+  function openRename(session) {
+    setRenameTarget(session)
+    setRenameValue(session.name || 'Untitled')
+    setModalError('')
+  }
+
+  function closeRename() {
+    if (submitting) return
+    setRenameTarget(null)
+    setRenameValue('')
+    setModalError('')
+  }
+
+  function openDelete(session) {
+    setDeleteTarget(session)
+    setModalError('')
+  }
+
+  function closeDelete() {
+    if (submitting) return
+    setDeleteTarget(null)
+    setModalError('')
+  }
+
+  async function handleRename(event) {
+    event.preventDefault()
+    if (!renameTarget) return
+
+    setSubmitting(true)
+    setModalError('')
+
+    try {
+      const response = await renameGameSession(renameTarget.sessionId, renameValue)
+      const updatedSession = normalizeSession(response?.session, { pendingSync: false, syncError: '' })
+
+      if (!updatedSession) {
+        throw new Error('Rename response was invalid.')
+      }
+
+      saveLocalSession(userId, updatedSession, { pendingSync: false, syncError: '' })
+      setSessions(prev => prev.map(session => (
+        session.sessionId === updatedSession.sessionId ? updatedSession : session
+      )))
+      setRenameTarget(null)
+      setRenameValue('')
+      setModalError('')
+    } catch (renameError) {
+      setModalError(renameError.message || 'Unable to rename this session.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  async function handleDelete() {
+    if (!deleteTarget) return
+
+    setSubmitting(true)
+    setModalError('')
+
+    try {
+      await deleteGameSession(deleteTarget.sessionId)
+      removeLocalSession(userId, deleteTarget.sessionId)
+      setSessions(prev => prev.filter(session => session.sessionId !== deleteTarget.sessionId))
+      setDeleteTarget(null)
+      setModalError('')
+    } catch (deleteError) {
+      setModalError(deleteError.message || 'Unable to delete this session.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   return (
     <div className="history-page">
       <PageTopbar
@@ -106,6 +190,7 @@ export default function HistoryPage() {
           {sessions.map(session => {
             const completed = session.status === 'completed'
             const Icon = completed ? CheckCircle2 : Clock3
+            const sessionName = session.name || 'Untitled'
 
             return (
               <article key={session.sessionId} className="history-item">
@@ -115,7 +200,7 @@ export default function HistoryPage() {
 
                 <div className="history-main">
                   <div className="history-row">
-                    <h2>{completed ? 'Completed Game' : 'Unfinished Game'}</h2>
+                    <h2>{sessionName}</h2>
                     <span className={`history-badge ${completed ? 'history-badge-completed' : 'history-badge-active'}`}>
                       {completed ? 'Completed' : 'In Progress'}
                     </span>
@@ -135,12 +220,85 @@ export default function HistoryPage() {
                   </div>
                 </div>
 
-                <Link className="history-action" to={`/play/${session.sessionId}`}>
-                  {completed ? 'Open' : 'Resume'}
-                </Link>
+                <div className="history-actions">
+                  <button
+                    className="history-icon-action"
+                    type="button"
+                    title="Rename session"
+                    aria-label={`Rename ${sessionName}`}
+                    onClick={() => openRename(session)}
+                  >
+                    <Pencil size={15} />
+                  </button>
+                  <Link className="history-action" to={`/play/${session.sessionId}`}>
+                    {completed ? 'Open' : 'Resume'}
+                  </Link>
+                  <button
+                    className="history-icon-action history-icon-action-danger"
+                    type="button"
+                    title="Delete session"
+                    aria-label={`Delete ${sessionName}`}
+                    onClick={() => openDelete(session)}
+                  >
+                    <Trash2 size={15} />
+                  </button>
+                </div>
               </article>
             )
           })}
+        </div>
+      ) : null}
+
+      {renameTarget ? (
+        <div className="modal-backdrop" role="presentation">
+          <form className="history-modal" onSubmit={handleRename}>
+            <h2>Rename saved game</h2>
+            <p>Update the display name shown in History. This does not change the session ID or saved board.</p>
+
+            <label className="auth-field">
+              <span className="auth-label">Session name</span>
+              <input
+                className="auth-input"
+                value={renameValue}
+                maxLength={80}
+                onChange={event => setRenameValue(event.target.value)}
+                autoFocus
+              />
+            </label>
+
+            {modalError ? <p className="auth-feedback auth-feedback-error">{modalError}</p> : null}
+
+            <div className="history-modal-actions">
+              <button className="history-modal-secondary" type="button" onClick={closeRename} disabled={submitting}>
+                Cancel
+              </button>
+              <button className="history-action" type="submit" disabled={submitting}>
+                {submitting ? 'Saving...' : 'Save'}
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : null}
+
+      {deleteTarget ? (
+        <div className="modal-backdrop" role="presentation">
+          <div className="history-modal" role="dialog" aria-modal="true">
+            <h2>Delete saved game</h2>
+            <p>
+              Delete "{deleteTarget.name || 'Untitled'}" from your saved games. This cannot be undone.
+            </p>
+
+            {modalError ? <p className="auth-feedback auth-feedback-error">{modalError}</p> : null}
+
+            <div className="history-modal-actions">
+              <button className="history-modal-secondary" type="button" onClick={closeDelete} disabled={submitting}>
+                Cancel
+              </button>
+              <button className="history-modal-danger" type="button" onClick={handleDelete} disabled={submitting}>
+                {submitting ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
         </div>
       ) : null}
     </div>

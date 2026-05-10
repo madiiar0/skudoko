@@ -73,6 +73,11 @@ function toIsoDate(value, fallback = new Date().toISOString()) {
   return Number.isNaN(date.getTime()) ? fallback : date.toISOString()
 }
 
+function sanitizeSessionName(name) {
+  const trimmedName = String(name || '').trim()
+  return trimmedName ? trimmedName.slice(0, 80) : 'Untitled'
+}
+
 function sanitizeHistory(history = []) {
   if (!Array.isArray(history)) {
     return []
@@ -116,6 +121,7 @@ export function createGameSession({ puzzle, solution }) {
 
   return {
     sessionId: createSessionId(),
+    name: 'Untitled',
     puzzle: cloneMatrix(puzzle),
     board: cloneMatrix(puzzle),
     locked,
@@ -154,6 +160,7 @@ export function normalizeSession(raw, options = {}) {
 
   return {
     sessionId,
+    name: sanitizeSessionName(raw.name),
     puzzle: cloneMatrix(puzzle),
     board: cloneMatrix(board),
     locked: cloneMatrix(locked),
@@ -194,6 +201,7 @@ export function touchSession(session, updates = {}) {
 export function toSessionPayload(session) {
   return {
     sessionId: session.sessionId,
+    name: sanitizeSessionName(session.name),
     puzzle: session.puzzle,
     board: session.board,
     locked: session.locked,
@@ -264,6 +272,19 @@ export function markLocalSessionSyncFailed(userId, session, message) {
 
 export function loadLocalSession(userId, sessionId) {
   return normalizeSession(safeRead(sessionKey(userId, sessionId), null))
+}
+
+export function removeLocalSession(userId, sessionId) {
+  if (!sessionId) {
+    return
+  }
+
+  safeRemove(sessionKey(userId, sessionId))
+  writeIndex(userId, readIndex(userId).filter(id => id !== sessionId))
+
+  if (getActiveSessionId(userId) === sessionId) {
+    setActiveSessionId(userId, null)
+  }
 }
 
 export function listLocalSessions(userId) {

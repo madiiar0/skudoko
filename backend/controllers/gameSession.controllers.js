@@ -35,6 +35,11 @@ function sanitizeHistory(history = []) {
         }));
 }
 
+function sanitizeSessionName(name) {
+    const trimmedName = String(name || "").trim();
+    return trimmedName ? trimmedName.slice(0, 80) : "Untitled";
+}
+
 function buildSessionPayload(body, sessionId) {
     const {
         puzzle,
@@ -46,6 +51,7 @@ function buildSessionPayload(body, sessionId) {
         elapsedSeconds = 0,
         completedAt,
         clientUpdatedAt,
+        name,
     } = body || {};
 
     if (!sessionId) {
@@ -74,6 +80,7 @@ function buildSessionPayload(body, sessionId) {
 
     return {
         sessionId,
+        ...(name !== undefined ? { name: sanitizeSessionName(name) } : {}),
         puzzle,
         board,
         locked,
@@ -90,6 +97,7 @@ function serializeSession(session) {
     const data = session.toObject();
     return {
         ...data,
+        name: sanitizeSessionName(data.name),
         id: data._id,
     };
 }
@@ -196,6 +204,47 @@ export const completeSession = async (req, res) => {
             success: true,
             message: "Session completed successfully!",
             session: serializeSession(session),
+        });
+    } catch(error){
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const renameSession = async (req, res) => {
+    try{
+        const { sessionId } = req.params;
+        const session = await GameSession.findOne({ userId: req.userId, sessionId });
+
+        if(!session){
+            return res.status(404).json({ success: false, message: "Session not found!" });
+        }
+
+        session.name = sanitizeSessionName(req.body?.name);
+        await session.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Session renamed successfully!",
+            session: serializeSession(session),
+        });
+    } catch(error){
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const deleteSession = async (req, res) => {
+    try{
+        const { sessionId } = req.params;
+        const session = await GameSession.findOneAndDelete({ userId: req.userId, sessionId });
+
+        if(!session){
+            return res.status(404).json({ success: false, message: "Session not found!" });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Session deleted successfully!",
+            sessionId,
         });
     } catch(error){
         res.status(400).json({ success: false, message: error.message });

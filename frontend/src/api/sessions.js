@@ -28,3 +28,16 @@ export function completeGameSession(sessionId, payload) {
     body: payload,
   })
 }
+
+export function renameGameSession(sessionId, name) {
+  return apiRequest(`/sessions/${sessionId}/name`, {
+    method: 'PATCH',
+    body: { name },
+  })
+}
+
+export function deleteGameSession(sessionId) {
+  return apiRequest(`/sessions/${sessionId}`, {
+    method: 'DELETE',
+  })
+}

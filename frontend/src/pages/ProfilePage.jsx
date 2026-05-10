@@ -57,7 +57,7 @@ export default function ProfilePage() {
         subtitle="View the account data currently returned by the auth backend and end your session when needed."
       />
 
-      <section className="profile-card">
+      <section>
         <div className="profile-grid">
           {profileFields.map(field => (
             <div key={field.label} className="profile-field">

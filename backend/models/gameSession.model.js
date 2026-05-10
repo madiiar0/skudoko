@@ -35,6 +35,12 @@ const gameSessionSchema = new mongoose.Schema({
         required: true,
         trim: true,
     },
+    name: {
+        type: String,
+        default: "Untitled",
+        trim: true,
+        maxlength: 80,
+    },
     puzzle: {
         type: [[Number]],
         required: true,

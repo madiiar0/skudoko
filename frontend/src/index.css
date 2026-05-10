@@ -452,6 +452,109 @@ a {
   letter-spacing: 0.2px;
 }
 
+.history-actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 220px;
+}
+
+.history-icon-action {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid #243450;
+  background: #1A2840;
+  color: #C8D4E8;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.history-icon-action:hover:not(:disabled) {
+  border-color: #35506A;
+  background: #25384F;
+  color: #fff;
+}
+
+.history-icon-action-danger {
+  color: #FF7090;
+  background: #2B0E18;
+  border-color: rgba(255, 77, 109, 0.35);
+}
+
+.history-icon-action-danger:hover:not(:disabled) {
+  color: #fff;
+  background: #3A0F1C;
+  border-color: rgba(255, 77, 109, 0.65);
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(2, 7, 16, 0.72);
+}
+
+.history-modal {
+  width: min(100%, 420px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px;
+  border-radius: 8px;
+  border: 1px solid #243450;
+  background: #162236;
+  box-shadow: 0 24px 54px rgba(2, 7, 16, 0.46);
+}
+
+.history-modal h2 {
+  font-size: 20px;
+  color: #E8EDF5;
+}
+
+.history-modal p {
+  color: #7A8699;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.history-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.history-modal-secondary,
+.history-modal-danger {
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.history-modal-secondary {
+  border: 1px solid #243450;
+  background: #1A2840;
+  color: #C8D4E8;
+}
+
+.history-modal-danger {
+  background: #3A0F1C;
+  color: #FFB3C1;
+  border: 1px solid rgba(255, 77, 109, 0.55);
+}
+
 .history-empty {
   max-width: 520px;
   padding: 22px;
@@ -763,8 +866,14 @@ a {
     flex-wrap: wrap;
   }
 
-  .history-action {
+  .history-actions {
     width: 100%;
+    min-width: 0;
+    justify-content: flex-start;
+  }
+
+  .history-action {
+    flex: 1;
   }
 }
 
