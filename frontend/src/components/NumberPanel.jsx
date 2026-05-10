@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Eraser, Undo2, Lightbulb, RefreshCw } from 'lucide-react'
+import { CheckCircle2, Eraser, Undo2, Lightbulb, RefreshCw } from 'lucide-react'
 
 function IconBtn({ icon: Icon, label, onClick, disabled }) {
   const [hov, setHov] = useState(false)
@@ -68,9 +68,66 @@ function NumBtn({ num, onClick, disabled }) {
   )
 }
 
-export default function NumberPanel({ onNumber, onRemove, onUndo, onNewGame, canUndo, hasSelection, disabled = false }) {
-  const [newHov, setNewHov] = useState(false)
+function WideActionButton({ icon: Icon, label, onClick, disabled = false, variant = 'primary' }) {
+  const [hov, setHov] = useState(false)
+  const primary = variant === 'primary'
 
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+        padding: '13px',
+        borderRadius: 7,
+        background: disabled
+          ? '#111E2E'
+          : primary
+            ? hov
+              ? 'linear-gradient(135deg, #FF8A2A 0%, #FF5C00 100%)'
+              : 'linear-gradient(135deg, #FF7A1A 0%, #FF3D00 100%)'
+            : hov
+              ? '#25384F'
+              : '#1A2840',
+        border: primary
+          ? '1px solid transparent'
+          : `1px solid ${disabled ? '#172236' : hov ? '#35506A' : '#243450'}`,
+        color: disabled ? '#2A3D52' : primary ? '#fff' : '#C8D4E8',
+        fontSize: 14,
+        fontWeight: 700,
+        letterSpacing: '0.2px',
+        boxShadow: primary && !disabled
+          ? hov
+            ? '0 4px 18px rgba(255,122,26,0.45)'
+            : '0 4px 18px rgba(255,122,26,0.28)'
+          : 'none',
+        transition: 'background 0.15s, box-shadow 0.15s, color 0.15s, border-color 0.15s',
+        width: '100%',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+      }}
+    >
+      <Icon size={15} strokeWidth={2.5} />
+      {label}
+    </button>
+  )
+}
+
+export default function NumberPanel({
+  onNumber,
+  onRemove,
+  onUndo,
+  onNewGame,
+  onCheckAnswer,
+  canUndo,
+  hasSelection,
+  disabled = false,
+  checking = false,
+}) {
   return (
     <div className="controls-panel">
       {/* Action buttons */}
@@ -87,33 +144,19 @@ export default function NumberPanel({ onNumber, onRemove, onUndo, onNewGame, can
         ))}
       </div>
 
-      {/* New Game */}
-      <button
+      <WideActionButton
+        icon={CheckCircle2}
+        label={checking ? 'Checking...' : 'Check the Answer'}
+        onClick={onCheckAnswer}
+        disabled={disabled || checking}
+        variant="secondary"
+      />
+
+      <WideActionButton
+        icon={RefreshCw}
+        label="New Game"
         onClick={onNewGame}
-        onMouseEnter={() => setNewHov(true)}
-        onMouseLeave={() => setNewHov(false)}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 8,
-          padding: '13px',
-          borderRadius: 7,
-          background: newHov
-            ? 'linear-gradient(135deg, #FF8A2A 0%, #FF5C00 100%)'
-            : 'linear-gradient(135deg, #FF7A1A 0%, #FF3D00 100%)',
-          color: '#fff',
-          fontSize: 14,
-          fontWeight: 700,
-          letterSpacing: '0.2px',
-          boxShadow: newHov ? '0 4px 18px rgba(255,122,26,0.45)' : '0 4px 18px rgba(255,122,26,0.28)',
-          transition: 'background 0.15s, box-shadow 0.15s',
-          width: '100%',
-        }}
-      >
-        <RefreshCw size={15} strokeWidth={2.5} />
-        New Game
-      </button>
+      />
     </div>
   )
 }

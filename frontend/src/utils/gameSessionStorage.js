@@ -52,16 +52,67 @@ function sessionKey(userId, sessionId) {
   return `sudoko.session.${userKey(userId)}.${sessionId}.${STORAGE_VERSION}`
 }
 
-function isNumberBoard(board) {
-  return Array.isArray(board)
-    && board.length === 9
-    && board.every(row => Array.isArray(row) && row.length === 9 && row.every(value => Number.isInteger(value) && value >= 0 && value <= 9))
+function normalizeNumberCell(value) {
+  if (value === null || value === undefined || value === '') {
+    return 0
+  }
+
+  if (typeof value === 'boolean') {
+    return NaN
+  }
+
+  const number = typeof value === 'number' ? value : Number(String(value).trim())
+  return Number.isInteger(number) && number >= 0 && number <= 9 ? number : NaN
 }
 
-function isBooleanBoard(board) {
-  return Array.isArray(board)
-    && board.length === 9
-    && board.every(row => Array.isArray(row) && row.length === 9 && row.every(value => typeof value === 'boolean'))
+function normalizeNumberBoard(board) {
+  if (!Array.isArray(board) || board.length !== 9) {
+    return null
+  }
+
+  const normalized = board.map(row => {
+    if (!Array.isArray(row) || row.length !== 9) {
+      return null
+    }
+
+    const normalizedRow = row.map(normalizeNumberCell)
+    return normalizedRow.some(Number.isNaN) ? null : normalizedRow
+  })
+
+  return normalized.some(row => row === null) ? null : normalized
+}
+
+function normalizeBooleanCell(value) {
+  if (typeof value === 'boolean') {
+    return value
+  }
+
+  if (value === 1 || value === '1' || value === 'true') {
+    return true
+  }
+
+  if (value === 0 || value === '0' || value === 'false') {
+    return false
+  }
+
+  return null
+}
+
+function normalizeBooleanBoard(board) {
+  if (!Array.isArray(board) || board.length !== 9) {
+    return null
+  }
+
+  const normalized = board.map(row => {
+    if (!Array.isArray(row) || row.length !== 9) {
+      return null
+    }
+
+    const normalizedRow = row.map(normalizeBooleanCell)
+    return normalizedRow.some(value => value === null) ? null : normalizedRow
+  })
+
+  return normalized.some(row => row === null) ? null : normalized
 }
 
 function toIsoDate(value, fallback = new Date().toISOString()) {
@@ -146,12 +197,12 @@ export function normalizeSession(raw, options = {}) {
 
   const now = new Date().toISOString()
   const sessionId = String(raw.sessionId || raw.id || raw._id || '').trim()
-  const puzzle = raw.puzzle
-  const board = raw.board
-  const locked = raw.locked
-  const solution = raw.solution
+  const puzzle = normalizeNumberBoard(raw.puzzle)
+  const board = normalizeNumberBoard(raw.board)
+  const locked = normalizeBooleanBoard(raw.locked)
+  const solution = normalizeNumberBoard(raw.solution)
 
-  if (!sessionId || !isNumberBoard(puzzle) || !isNumberBoard(board) || !isBooleanBoard(locked) || !isNumberBoard(solution)) {
+  if (!sessionId || !puzzle || !board || !locked || !solution) {
     return null
   }
 

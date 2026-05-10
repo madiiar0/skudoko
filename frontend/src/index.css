@@ -204,6 +204,7 @@ a {
 
 /* Game area */
 .game-area {
+  position: relative;
   display: flex;
   gap: 28px;
   align-items: flex-start;
@@ -211,6 +212,14 @@ a {
   flex-wrap: wrap;
   flex: 1;
   align-content: flex-start;
+}
+
+.confetti-anchor {
+  position: absolute;
+  top: 250px;
+  left: min(50%, 258px);
+  z-index: 30;
+  pointer-events: none;
 }
 
 /* Board sizing — desktop default */
@@ -827,6 +836,11 @@ a {
   .game-area {
     gap: 18px;
     justify-content: center;
+  }
+
+  .confetti-anchor {
+    top: min(45vw, 240px);
+    left: 50%;
   }
 
   .controls-panel {
