@@ -41,6 +41,11 @@ const gameSessionSchema = new mongoose.Schema({
         trim: true,
         maxlength: 80,
     },
+    difficulty: {
+        type: String,
+        enum: ['easy', 'medium', 'hard', 'extreme'],
+        default: 'medium',
+    },
     puzzle: {
         type: [[Number]],
         required: true,

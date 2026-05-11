@@ -371,6 +371,7 @@ a {
 .history-item {
   display: flex;
   align-items: center;
+  width: 100%;
   gap: 16px;
   padding: 16px;
   border-radius: 8px;
@@ -429,6 +430,11 @@ a {
   background: rgba(45, 212, 191, 0.12);
 }
 
+.history-badge-difficulty {
+  color: #C8D4E8;
+  background: rgba(200, 212, 232, 0.1);
+}
+
 .history-meta {
   display: flex;
   align-items: center;
@@ -471,8 +477,8 @@ a {
 }
 
 .history-icon-action {
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
@@ -568,8 +574,6 @@ a {
   max-width: 520px;
   padding: 22px;
   border-radius: 8px;
-  border: 1px solid #243450;
-  background: #162236;
   color: #7A8699;
 }
 

@@ -18,11 +18,13 @@ import {
   touchSession,
   toSessionPayload,
 } from '../../utils/gameSessionStorage'
+import { DEFAULT_DIFFICULTY, getDifficultyBlankCount, normalizeDifficulty } from '../../utils/difficulty'
 import { generatePuzzle } from '../../utils/sudoku'
 
-function createNewGameSession() {
-  const { puzzle, solution } = generatePuzzle(40)
-  return createGameSession({ puzzle, solution })
+function createNewGameSession(difficulty = DEFAULT_DIFFICULTY) {
+  const normalizedDifficulty = normalizeDifficulty(difficulty)
+  const { puzzle, solution } = generatePuzzle({ blankCount: getDifficultyBlankCount(normalizedDifficulty) })
+  return createGameSession({ puzzle, solution, difficulty: normalizedDifficulty })
 }
 
 function getDefaultLocalSession(userId) {
@@ -234,8 +236,8 @@ export function usePlaySessionPersistence() {
     }
   }
 
-  function startNewSession() {
-    const newSession = createNewGameSession()
+  function startNewSession(difficulty = DEFAULT_DIFFICULTY) {
+    const newSession = createNewGameSession(difficulty)
     saveLocalSession(userId, newSession, { pendingSync: true })
     setActiveSessionId(userId, newSession.sessionId)
     setSession(newSession)

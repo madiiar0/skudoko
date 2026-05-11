@@ -13,6 +13,7 @@ import {
   removeLocalSession,
   saveLocalSession,
 } from '../utils/gameSessionStorage'
+import { getDifficultyLabel } from '../utils/difficulty'
 
 function formatDateTime(value) {
   if (!value) {
@@ -191,6 +192,7 @@ export default function HistoryPage() {
             const completed = session.status === 'completed'
             const Icon = completed ? CheckCircle2 : Clock3
             const sessionName = session.name || 'Untitled'
+            const difficultyLabel = getDifficultyLabel(session.difficulty)
 
             return (
               <article key={session.sessionId} className="history-item">
@@ -203,6 +205,9 @@ export default function HistoryPage() {
                     <h2>{sessionName}</h2>
                     <span className={`history-badge ${completed ? 'history-badge-completed' : 'history-badge-active'}`}>
                       {completed ? 'Completed' : 'In Progress'}
+                    </span>
+                    <span className="history-badge history-badge-difficulty">
+                      {difficultyLabel}
                     </span>
                   </div>
 

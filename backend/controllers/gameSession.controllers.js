@@ -40,6 +40,13 @@ function sanitizeSessionName(name) {
     return trimmedName ? trimmedName.slice(0, 80) : "Untitled";
 }
 
+function sanitizeDifficulty(difficulty) {
+    const normalizedDifficulty = String(difficulty || "").trim().toLowerCase();
+    return ['easy', 'medium', 'hard', 'extreme'].includes(normalizedDifficulty)
+        ? normalizedDifficulty
+        : 'medium';
+}
+
 function buildSessionPayload(body, sessionId) {
     const {
         puzzle,
@@ -52,6 +59,7 @@ function buildSessionPayload(body, sessionId) {
         completedAt,
         clientUpdatedAt,
         name,
+        difficulty,
     } = body || {};
 
     if (!sessionId) {
@@ -81,6 +89,7 @@ function buildSessionPayload(body, sessionId) {
     return {
         sessionId,
         ...(name !== undefined ? { name: sanitizeSessionName(name) } : {}),
+        ...(difficulty !== undefined ? { difficulty: sanitizeDifficulty(difficulty) } : {}),
         puzzle,
         board,
         locked,
@@ -98,6 +107,7 @@ function serializeSession(session) {
     return {
         ...data,
         name: sanitizeSessionName(data.name),
+        difficulty: sanitizeDifficulty(data.difficulty),
         id: data._id,
     };
 }
@@ -107,6 +117,10 @@ async function saveSessionForUser(userId, sessionId, body) {
     const existingSession = await GameSession.findOne({ userId, sessionId });
 
     if (existingSession) {
+        if (payload.difficulty === undefined && !existingSession.difficulty) {
+            payload.difficulty = 'medium';
+        }
+
         const incomingTime = new Date(payload.clientUpdatedAt).getTime();
         const existingTime = existingSession.clientUpdatedAt ? new Date(existingSession.clientUpdatedAt).getTime() : 0;
 
@@ -120,6 +134,7 @@ async function saveSessionForUser(userId, sessionId, body) {
 
     const session = new GameSession({
         userId,
+        difficulty: payload.difficulty || 'medium',
         ...payload,
     });
 

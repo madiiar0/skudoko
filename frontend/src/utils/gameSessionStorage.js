@@ -1,3 +1,5 @@
+import { DEFAULT_DIFFICULTY, normalizeDifficulty } from './difficulty'
+
 const STORAGE_VERSION = 'v1'
 
 function getStorage() {
@@ -166,13 +168,14 @@ export function cloneMatrix(matrix) {
   return matrix.map(row => [...row])
 }
 
-export function createGameSession({ puzzle, solution }) {
+export function createGameSession({ puzzle, solution, difficulty = DEFAULT_DIFFICULTY }) {
   const now = new Date().toISOString()
   const locked = puzzle.map(row => row.map(value => value !== 0))
 
   return {
     sessionId: createSessionId(),
     name: 'Untitled',
+    difficulty: normalizeDifficulty(difficulty),
     puzzle: cloneMatrix(puzzle),
     board: cloneMatrix(puzzle),
     locked,
@@ -212,6 +215,7 @@ export function normalizeSession(raw, options = {}) {
   return {
     sessionId,
     name: sanitizeSessionName(raw.name),
+    difficulty: normalizeDifficulty(raw.difficulty),
     puzzle: cloneMatrix(puzzle),
     board: cloneMatrix(board),
     locked: cloneMatrix(locked),
@@ -253,6 +257,7 @@ export function toSessionPayload(session) {
   return {
     sessionId: session.sessionId,
     name: sanitizeSessionName(session.name),
+    difficulty: normalizeDifficulty(session.difficulty),
     puzzle: session.puzzle,
     board: session.board,
     locked: session.locked,

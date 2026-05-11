@@ -43,13 +43,14 @@ function solveBoardBacktrack(board) {
   return true;
 }
 
-export function generatePuzzle(clues = 40) {
+export function generatePuzzle(options = 40) {
   const solution = Array.from({ length: 9 }, () => Array(9).fill(0));
   solveBoardBacktrack(solution);
 
   const puzzle = solution.map(row => [...row]);
   let removed = 0;
-  const target = 81 - clues;
+  const requestedBlankCount = typeof options === 'number' ? 81 - options : options?.blankCount;
+  const target = Math.max(0, Math.min(81, Number(requestedBlankCount) || 0));
   const positions = shuffle(Array.from({ length: 81 }, (_, i) => i));
 
   for (const pos of positions) {

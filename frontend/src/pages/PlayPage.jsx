@@ -18,6 +18,7 @@ export default function PlayPage() {
     showNewGameConfirm,
     isStartingNewGame,
     isExploding,
+    selectedDifficulty,
     viewOnly,
     hasEditableSelection,
     handleSelect,
@@ -28,6 +29,7 @@ export default function PlayPage() {
     handleNewGame,
     handleConfirmNewGame,
     handleCancelNewGame,
+    handleDifficultyChange,
     stopConfetti,
   } = usePlayPageController()
 
@@ -102,6 +104,8 @@ export default function PlayPage() {
       {showNewGameConfirm ? (
         <NewGameConfirmModal
           isStarting={isStartingNewGame}
+          difficulty={selectedDifficulty}
+          onDifficultyChange={handleDifficultyChange}
           onCancel={handleCancelNewGame}
           onConfirm={handleConfirmNewGame}
         />
