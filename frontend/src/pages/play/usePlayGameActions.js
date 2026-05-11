@@ -7,6 +7,7 @@ import {
 } from '../../utils/gameSessionStorage'
 import { DEFAULT_DIFFICULTY, normalizeDifficulty } from '../../utils/difficulty'
 import { isBoardFilled, isSudokuAnswerCorrect, validateMove } from '../../utils/sudoku'
+import { addTipCell, getTipBadge, isTipCell, sanitizeTipsRemaining } from '../../utils/tips'
 
 function getKeyboardNumber(event) {
   if (/^[1-9]$/.test(event.key)) {
@@ -28,6 +29,41 @@ function isTypingTarget(target) {
   return !!target.closest('input, textarea, select, [contenteditable="true"], [contenteditable=""]')
 }
 
+function isCorrectSolutionValue(value) {
+  return Number.isInteger(value) && value >= 1 && value <= 9
+}
+
+function isCellLocked(session, row, col) {
+  return !!session?.locked?.[row]?.[col] || isTipCell(session?.tipCells, row, col)
+}
+
+function getEligibleTipCells(session) {
+  if (!session || session.status === 'completed') {
+    return []
+  }
+
+  const cells = []
+
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      if (
+        session.board?.[row]?.[col] === 0
+        && !session.locked?.[row]?.[col]
+        && !isTipCell(session.tipCells, row, col)
+        && isCorrectSolutionValue(session.solution?.[row]?.[col])
+      ) {
+        cells.push({ row, col })
+      }
+    }
+  }
+
+  return cells
+}
+
+function chooseRandomCell(cells) {
+  return cells[Math.floor(Math.random() * cells.length)]
+}
+
 export function usePlayGameActions({
   session,
   setSession,
@@ -44,9 +80,11 @@ export function usePlayGameActions({
   const [showNewGameConfirm, setShowNewGameConfirm] = useState(false)
   const [isStartingNewGame, setIsStartingNewGame] = useState(false)
   const [isExploding, setIsExploding] = useState(false)
+  const [showTipAd, setShowTipAd] = useState(false)
   const [selectedDifficulty, setSelectedDifficulty] = useState(DEFAULT_DIFFICULTY)
 
-  const hasEditableSelection = !!selected && !session?.locked[selected[0]][selected[1]] && !viewOnly
+  const hasEditableSelection = !!selected && !isCellLocked(session, selected[0], selected[1]) && !viewOnly
+  const tipBadge = getTipBadge(session?.tipsRemaining)
 
   useEffect(() => {
     let isActive = true
@@ -57,6 +95,7 @@ export function usePlayGameActions({
       setSelected(null)
       setErrorCell(null)
       setShowNewGameConfirm(false)
+      setShowTipAd(false)
       setIsExploding(false)
       setSelectedDifficulty(DEFAULT_DIFFICULTY)
     })
@@ -88,12 +127,17 @@ export function usePlayGameActions({
     }
 
     const [r, c] = selected
-    if (session.locked[r][c]) {
+    if (isCellLocked(session, r, c)) {
       return
     }
 
-    if (!validateMove(session.board, r, c, num)) {
+    if (!validateMove(session.solution, r, c, num)) {
       setErrorCell([r, c])
+      setSession(prev => (
+        prev
+          ? touchSession(prev, { mistakeCount: (prev.mistakeCount || 0) + 1 })
+          : prev
+      ))
       return
     }
 
@@ -116,7 +160,7 @@ export function usePlayGameActions({
 
   useEffect(() => {
     function handleKeyDown(event) {
-      if (event.ctrlKey || event.metaKey || event.altKey || showNewGameConfirm || isTypingTarget(event.target)) {
+      if (event.ctrlKey || event.metaKey || event.altKey || showNewGameConfirm || showTipAd || isTypingTarget(event.target)) {
         return
       }
 
@@ -133,13 +177,13 @@ export function usePlayGameActions({
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [showNewGameConfirm])
+  }, [showNewGameConfirm, showTipAd])
 
   function handleRemove() {
     if (!selected || !session || viewOnly) return
     const [r, c] = selected
 
-    if (session.locked[r][c]) {
+    if (isCellLocked(session, r, c)) {
       return
     }
 
@@ -164,7 +208,16 @@ export function usePlayGameActions({
       if (prev.history.length === 0) return prev
 
       const history = [...prev.history]
-      const last = history.pop()
+      let last = history.pop()
+
+      while (last && isTipCell(prev.tipCells, last.r, last.c)) {
+        last = history.pop()
+      }
+
+      if (!last) {
+        return history.length === prev.history.length ? prev : touchSession(prev, { history })
+      }
+
       const newBoard = prev.board.map(row => [...row])
       newBoard[last.r][last.c] = last.prev
 
@@ -174,6 +227,58 @@ export function usePlayGameActions({
       })
     })
     setErrorCell(null)
+  }
+
+  function revealTip(nextTipsRemaining) {
+    if (!session || viewOnly) {
+      return false
+    }
+
+    const eligibleCells = getEligibleTipCells(session)
+    if (eligibleCells.length === 0) {
+      toast.error('No empty cells are available for a tip.')
+      return false
+    }
+
+    const tipCell = chooseRandomCell(eligibleCells)
+    const nextBoard = session.board.map(row => [...row])
+    nextBoard[tipCell.row][tipCell.col] = session.solution[tipCell.row][tipCell.col]
+
+    setSession(prev => (
+      prev?.sessionId === session.sessionId
+        ? touchSession(prev, {
+            board: nextBoard,
+            tipCells: addTipCell(prev.tipCells, tipCell.row, tipCell.col),
+            tipsRemaining: nextTipsRemaining,
+          })
+        : prev
+    ))
+    setErrorCell(null)
+    return true
+  }
+
+  function handleTip() {
+    if (!session || viewOnly) {
+      return
+    }
+
+    if (getEligibleTipCells(session).length === 0) {
+      toast.error('No empty cells are available for a tip.')
+      return
+    }
+
+    const tipsRemaining = sanitizeTipsRemaining(session.tipsRemaining)
+    if (tipsRemaining <= 0) {
+      setShowTipAd(true)
+      return
+    }
+
+    revealTip(tipsRemaining - 1)
+  }
+
+  function handleCloseTipAd() {
+    setShowTipAd(false)
+    revealTip(2)
   }
 
   async function handleCheckAnswer() {
@@ -248,18 +353,22 @@ export function usePlayGameActions({
     errorCell,
     isCheckingAnswer,
     showNewGameConfirm,
+    showTipAd,
     isStartingNewGame,
     isExploding,
     selectedDifficulty,
+    tipBadge,
     hasEditableSelection,
     handleSelect,
     handleNumber,
     handleRemove,
+    handleTip,
     handleUndo,
     handleCheckAnswer,
     handleNewGame,
     handleConfirmNewGame,
     handleCancelNewGame,
+    handleCloseTipAd,
     handleDifficultyChange,
     stopConfetti: () => setIsExploding(false),
   }

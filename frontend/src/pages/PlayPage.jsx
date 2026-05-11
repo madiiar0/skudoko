@@ -5,6 +5,7 @@ import NumberPanel from '../components/NumberPanel'
 import PageTopbar from '../components/PageTopbar'
 import CompletionConfetti from './play/CompletionConfetti'
 import NewGameConfirmModal from './play/NewGameConfirmModal'
+import TipAdModal from './play/TipAdModal'
 import { usePlayPageController } from './play/usePlayPageController'
 
 export default function PlayPage() {
@@ -16,19 +17,23 @@ export default function PlayPage() {
     loadError,
     isCheckingAnswer,
     showNewGameConfirm,
+    showTipAd,
     isStartingNewGame,
     isExploding,
     selectedDifficulty,
+    tipBadge,
     viewOnly,
     hasEditableSelection,
     handleSelect,
     handleNumber,
     handleRemove,
+    handleTip,
     handleUndo,
     handleCheckAnswer,
     handleNewGame,
     handleConfirmNewGame,
     handleCancelNewGame,
+    handleCloseTipAd,
     handleDifficultyChange,
     stopConfetti,
   } = usePlayPageController()
@@ -78,21 +83,27 @@ export default function PlayPage() {
         <SudokuGrid
           board={session.board}
           locked={session.locked}
+          tipCells={session.tipCells}
           selected={selected}
           onSelect={handleSelect}
           error={errorCell}
         />
-        <NumberPanel
-          onNumber={handleNumber}
-          onRemove={handleRemove}
-          onUndo={handleUndo}
-          onNewGame={handleNewGame}
-          onCheckAnswer={handleCheckAnswer}
-          canUndo={!viewOnly && session.history.length > 0}
-          hasSelection={hasEditableSelection}
-          disabled={viewOnly}
-          checking={isCheckingAnswer}
-        />
+        <div className="play-controls-stack">
+          <p className="mistake-count">Mistake count: {session.mistakeCount || 0}</p>
+          <NumberPanel
+            onNumber={handleNumber}
+            onRemove={handleRemove}
+            onTip={handleTip}
+            onUndo={handleUndo}
+            onNewGame={handleNewGame}
+            onCheckAnswer={handleCheckAnswer}
+            canUndo={!viewOnly && session.history.length > 0}
+            hasSelection={hasEditableSelection}
+            tipBadge={tipBadge}
+            disabled={viewOnly}
+            checking={isCheckingAnswer}
+          />
+        </div>
       </div>
 
       {session.status === 'completed' ? (
@@ -110,6 +121,8 @@ export default function PlayPage() {
           onConfirm={handleConfirmNewGame}
         />
       ) : null}
+
+      {showTipAd ? <TipAdModal onClose={handleCloseTipAd} /> : null}
     </div>
   )
 }

@@ -18,12 +18,12 @@ import {
   touchSession,
   toSessionPayload,
 } from '../../utils/gameSessionStorage'
-import { DEFAULT_DIFFICULTY, getDifficultyBlankCount, normalizeDifficulty } from '../../utils/difficulty'
+import { DEFAULT_DIFFICULTY, normalizeDifficulty } from '../../utils/difficulty'
 import { generatePuzzle } from '../../utils/sudoku'
 
 function createNewGameSession(difficulty = DEFAULT_DIFFICULTY) {
   const normalizedDifficulty = normalizeDifficulty(difficulty)
-  const { puzzle, solution } = generatePuzzle({ blankCount: getDifficultyBlankCount(normalizedDifficulty) })
+  const { puzzle, solution } = generatePuzzle(normalizedDifficulty)
   return createGameSession({ puzzle, solution, difficulty: normalizedDifficulty })
 }
 

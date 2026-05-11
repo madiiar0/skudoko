@@ -213,6 +213,7 @@ export default function HistoryPage() {
 
                   <div className="history-meta">
                     <span>Moves: {session.history.length}</span>
+                    <span>Mistakes: {session.mistakeCount || 0}</span>
                     <span>Elapsed: {formatDuration(session.elapsedSeconds)}</span>
                     <span>Updated: {formatDateTime(session.updatedAt || session.clientUpdatedAt)}</span>
                     {completed ? <span>Completed: {formatDateTime(session.completedAt)}</span> : null}

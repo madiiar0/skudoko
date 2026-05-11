@@ -1,5 +1,7 @@
 import GameSession from "../models/gameSession.model.js";
 
+const INITIAL_TIPS_REMAINING = 3;
+
 function isValidMatrix(matrix, validator) {
     return Array.isArray(matrix)
         && matrix.length === 9
@@ -47,6 +49,51 @@ function sanitizeDifficulty(difficulty) {
         : 'medium';
 }
 
+function sanitizeMistakeCount(mistakeCount) {
+    return Math.max(0, Math.floor(Number(mistakeCount) || 0));
+}
+
+function normalizeTipIndex(value) {
+    const number = Number(value);
+    return Number.isInteger(number) && number >= 0 && number < 9 ? number : null;
+}
+
+function sanitizeTipCells(tipCells = []) {
+    if (!Array.isArray(tipCells)) {
+        return [];
+    }
+
+    const seen = new Set();
+    const sanitized = [];
+
+    tipCells.forEach(cell => {
+        const row = normalizeTipIndex(cell?.row);
+        const col = normalizeTipIndex(cell?.col);
+
+        if (row === null || col === null) {
+            return;
+        }
+
+        const key = `${row}:${col}`;
+        if (seen.has(key)) {
+            return;
+        }
+
+        seen.add(key);
+        sanitized.push({ row, col });
+    });
+
+    return sanitized;
+}
+
+function sanitizeTipsRemaining(tipsRemaining) {
+    if (tipsRemaining === undefined || tipsRemaining === null || tipsRemaining === '') {
+        return INITIAL_TIPS_REMAINING;
+    }
+
+    return Math.max(0, Math.floor(Number(tipsRemaining) || 0));
+}
+
 function buildSessionPayload(body, sessionId) {
     const {
         puzzle,
@@ -60,6 +107,9 @@ function buildSessionPayload(body, sessionId) {
         clientUpdatedAt,
         name,
         difficulty,
+        mistakeCount,
+        tipCells,
+        tipsRemaining,
     } = body || {};
 
     if (!sessionId) {
@@ -90,6 +140,9 @@ function buildSessionPayload(body, sessionId) {
         sessionId,
         ...(name !== undefined ? { name: sanitizeSessionName(name) } : {}),
         ...(difficulty !== undefined ? { difficulty: sanitizeDifficulty(difficulty) } : {}),
+        ...(mistakeCount !== undefined ? { mistakeCount: sanitizeMistakeCount(mistakeCount) } : {}),
+        ...(tipCells !== undefined ? { tipCells: sanitizeTipCells(tipCells) } : {}),
+        ...(tipsRemaining !== undefined ? { tipsRemaining: sanitizeTipsRemaining(tipsRemaining) } : {}),
         puzzle,
         board,
         locked,
@@ -108,6 +161,9 @@ function serializeSession(session) {
         ...data,
         name: sanitizeSessionName(data.name),
         difficulty: sanitizeDifficulty(data.difficulty),
+        mistakeCount: sanitizeMistakeCount(data.mistakeCount),
+        tipCells: sanitizeTipCells(data.tipCells),
+        tipsRemaining: sanitizeTipsRemaining(data.tipsRemaining),
         id: data._id,
     };
 }
@@ -119,6 +175,18 @@ async function saveSessionForUser(userId, sessionId, body) {
     if (existingSession) {
         if (payload.difficulty === undefined && !existingSession.difficulty) {
             payload.difficulty = 'medium';
+        }
+
+        if (payload.mistakeCount === undefined && existingSession.mistakeCount === undefined) {
+            payload.mistakeCount = 0;
+        }
+
+        if (payload.tipCells === undefined && existingSession.tipCells === undefined) {
+            payload.tipCells = [];
+        }
+
+        if (payload.tipsRemaining === undefined && existingSession.tipsRemaining === undefined) {
+            payload.tipsRemaining = INITIAL_TIPS_REMAINING;
         }
 
         const incomingTime = new Date(payload.clientUpdatedAt).getTime();
@@ -135,6 +203,9 @@ async function saveSessionForUser(userId, sessionId, body) {
     const session = new GameSession({
         userId,
         difficulty: payload.difficulty || 'medium',
+        mistakeCount: payload.mistakeCount || 0,
+        tipCells: payload.tipCells || [],
+        tipsRemaining: payload.tipsRemaining ?? INITIAL_TIPS_REMAINING,
         ...payload,
     });
 

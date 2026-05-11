@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { CheckCircle2, Eraser, Undo2, Lightbulb, RefreshCw } from 'lucide-react'
 
-function IconBtn({ icon: Icon, label, onClick, disabled }) {
+function IconBtn({ icon: Icon, label, onClick, disabled, badge }) {
   const [hov, setHov] = useState(false)
 
   return (
@@ -29,8 +29,35 @@ function IconBtn({ icon: Icon, label, onClick, disabled }) {
         cursor: disabled ? 'not-allowed' : 'pointer',
         transition: 'background 0.15s, color 0.15s, border-color 0.15s',
         minHeight: 54,
+        position: 'relative',
       }}
     >
+      {badge ? (
+        <span
+          className="tip-badge"
+          style={{
+            position: 'absolute',
+            top: -7,
+            right: -7,
+            minWidth: 18,
+            height: 18,
+            padding: '0 5px',
+            borderRadius: 999,
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: disabled ? '#172236' : '#FF7A1A',
+            color: disabled ? '#4A5568' : '#fff',
+            fontSize: 10,
+            fontWeight: 800,
+            lineHeight: 1,
+            boxShadow: '0 2px 8px rgba(2, 7, 16, 0.38)',
+            zIndex: 2,
+          }}
+        >
+          {badge}
+        </span>
+      ) : null}
       <Icon size={16} strokeWidth={2} />
       <span>{label}</span>
     </button>
@@ -120,11 +147,13 @@ function WideActionButton({ icon: Icon, label, onClick, disabled = false, varian
 export default function NumberPanel({
   onNumber,
   onRemove,
+  onTip,
   onUndo,
   onNewGame,
   onCheckAnswer,
   canUndo,
   hasSelection,
+  tipBadge,
   disabled = false,
   checking = false,
 }) {
@@ -134,7 +163,7 @@ export default function NumberPanel({
       <div style={{ display: 'flex', gap: 7 }}>
         <IconBtn icon={Eraser} label="Remove" onClick={onRemove} disabled={disabled || !hasSelection} />
         <IconBtn icon={Undo2} label="Back" onClick={onUndo} disabled={disabled || !canUndo} />
-        <IconBtn icon={Lightbulb} label="Tip" onClick={() => {}} disabled={disabled} />
+        <IconBtn icon={Lightbulb} label="Tip" onClick={onTip} disabled={disabled} badge={tipBadge} />
       </div>
 
       {/* Number pad — layout controlled by .num-grid CSS (responsive) */}

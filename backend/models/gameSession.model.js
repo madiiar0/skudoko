@@ -23,6 +23,17 @@ const historyEntrySchema = new mongoose.Schema({
     },
 }, {_id: false});
 
+const tipCellSchema = new mongoose.Schema({
+    row: {
+        type: Number,
+        required: true,
+    },
+    col: {
+        type: Number,
+        required: true,
+    },
+}, {_id: false});
+
 const gameSessionSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -45,6 +56,20 @@ const gameSessionSchema = new mongoose.Schema({
         type: String,
         enum: ['easy', 'medium', 'hard', 'extreme'],
         default: 'medium',
+    },
+    mistakeCount: {
+        type: Number,
+        default: 0,
+        min: 0,
+    },
+    tipCells: {
+        type: [tipCellSchema],
+        default: [],
+    },
+    tipsRemaining: {
+        type: Number,
+        default: 3,
+        min: 0,
     },
     puzzle: {
         type: [[Number]],

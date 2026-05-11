@@ -1,5 +1,7 @@
 import { useState } from 'react'
 
+import { isTipCell } from '../utils/tips'
+
 function isRelated(selected, r, c) {
   if (!selected) return false
   const [sr, sc] = selected
@@ -23,11 +25,12 @@ const C = {
 
   numUser:   '#C8D4E8', // cool blue-white for user-entered
   numLocked: '#E8A040', // golden amber for given numbers
+  numTip:    '#C8D4E8', // soft green for revealed tip cells
   numSelected: '#FFFFFF', // white — readable on orange bg regardless of locked/user
   numError:  '#FF7090', // bright pink-red on dark red bg
 }
 
-export default function SudokuGrid({ board, locked, selected, onSelect, error }) {
+export default function SudokuGrid({ board, locked, tipCells = [], selected, onSelect, error }) {
   const [hovered, setHovered] = useState(null)
   const selectedNum = selected ? board[selected[0]][selected[1]] : 0
 
@@ -77,6 +80,7 @@ export default function SudokuGrid({ board, locked, selected, onSelect, error })
 
                 const isSelected = !!(selected && selected[0] === r && selected[1] === c)
                 const isLocked   = locked[r][c]
+                const isTip      = isTipCell(tipCells, r, c)
                 const isSameNum  = !!(selectedNum && val === selectedNum && !isSelected)
                 const isHov      = !!(hovered && hovered[0] === r && hovered[1] === c)
                 const isErr      = !!(error && error[0] === r && error[1] === c)
@@ -98,6 +102,8 @@ export default function SudokuGrid({ board, locked, selected, onSelect, error })
                 // Text color
                 const numColor = isErr
                   ? C.numError
+                  : isTip
+                  ? C.numTip
                   : isSelected
                   ? C.numSelected
                   : isLocked
@@ -120,7 +126,7 @@ export default function SudokuGrid({ board, locked, selected, onSelect, error })
                       alignItems: 'center',
                       justifyContent: 'center',
                       background: bg,
-                      cursor: isLocked ? 'default' : 'pointer',
+                      cursor: isLocked || isTip ? 'default' : 'pointer',
                       transition: 'background 0.1s',
                       fontSize: 'clamp(13px, 2vw, 21px)',
                       fontWeight: isLocked ? 700 : 600,

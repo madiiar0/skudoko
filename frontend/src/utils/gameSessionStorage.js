@@ -1,4 +1,5 @@
 import { DEFAULT_DIFFICULTY, normalizeDifficulty } from './difficulty'
+import { INITIAL_TIPS_REMAINING, normalizeTipCells, sanitizeTipsRemaining } from './tips'
 
 const STORAGE_VERSION = 'v1'
 
@@ -131,6 +132,10 @@ function sanitizeSessionName(name) {
   return trimmedName ? trimmedName.slice(0, 80) : 'Untitled'
 }
 
+function sanitizeMistakeCount(mistakeCount) {
+  return Math.max(0, Math.floor(Number(mistakeCount) || 0))
+}
+
 function sanitizeHistory(history = []) {
   if (!Array.isArray(history)) {
     return []
@@ -176,6 +181,9 @@ export function createGameSession({ puzzle, solution, difficulty = DEFAULT_DIFFI
     sessionId: createSessionId(),
     name: 'Untitled',
     difficulty: normalizeDifficulty(difficulty),
+    mistakeCount: 0,
+    tipCells: [],
+    tipsRemaining: INITIAL_TIPS_REMAINING,
     puzzle: cloneMatrix(puzzle),
     board: cloneMatrix(puzzle),
     locked,
@@ -216,6 +224,9 @@ export function normalizeSession(raw, options = {}) {
     sessionId,
     name: sanitizeSessionName(raw.name),
     difficulty: normalizeDifficulty(raw.difficulty),
+    mistakeCount: sanitizeMistakeCount(raw.mistakeCount),
+    tipCells: normalizeTipCells(raw.tipCells),
+    tipsRemaining: sanitizeTipsRemaining(raw.tipsRemaining),
     puzzle: cloneMatrix(puzzle),
     board: cloneMatrix(board),
     locked: cloneMatrix(locked),
@@ -258,6 +269,9 @@ export function toSessionPayload(session) {
     sessionId: session.sessionId,
     name: sanitizeSessionName(session.name),
     difficulty: normalizeDifficulty(session.difficulty),
+    mistakeCount: sanitizeMistakeCount(session.mistakeCount),
+    tipCells: normalizeTipCells(session.tipCells),
+    tipsRemaining: sanitizeTipsRemaining(session.tipsRemaining),
     puzzle: session.puzzle,
     board: session.board,
     locked: session.locked,
