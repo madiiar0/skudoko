@@ -21,6 +21,7 @@ export default function PlayPage() {
     isStartingNewGame,
     isExploding,
     selectedDifficulty,
+    inputMode,
     tipBadge,
     viewOnly,
     hasEditableSelection,
@@ -35,6 +36,7 @@ export default function PlayPage() {
     handleCancelNewGame,
     handleCloseTipAd,
     handleDifficultyChange,
+    handleInputModeChange,
     stopConfetti,
   } = usePlayPageController()
 
@@ -83,6 +85,7 @@ export default function PlayPage() {
         <SudokuGrid
           board={session.board}
           locked={session.locked}
+          candidates={session.candidates}
           tipCells={session.tipCells}
           selected={selected}
           onSelect={handleSelect}
@@ -100,6 +103,8 @@ export default function PlayPage() {
             canUndo={!viewOnly && session.history.length > 0}
             hasSelection={hasEditableSelection}
             tipBadge={tipBadge}
+            inputMode={inputMode}
+            onInputModeChange={handleInputModeChange}
             disabled={viewOnly}
             checking={isCheckingAnswer}
           />

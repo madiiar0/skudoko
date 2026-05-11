@@ -2,6 +2,12 @@ import GameSession from "../models/gameSession.model.js";
 
 const INITIAL_TIPS_REMAINING = 3;
 
+function createEmptyCandidates() {
+    return Array.from({ length: 9 }, () => (
+        Array.from({ length: 9 }, () => [])
+    ));
+}
+
 function isValidMatrix(matrix, validator) {
     return Array.isArray(matrix)
         && matrix.length === 9
@@ -94,6 +100,33 @@ function sanitizeTipsRemaining(tipsRemaining) {
     return Math.max(0, Math.floor(Number(tipsRemaining) || 0));
 }
 
+function sanitizeCandidateCell(cell) {
+    if (!Array.isArray(cell)) {
+        return [];
+    }
+
+    return [...new Set(cell
+        .map(value => Number(value))
+        .filter(value => Number.isInteger(value) && value >= 1 && value <= 9))]
+        .sort((a, b) => a - b);
+}
+
+function sanitizeCandidates(candidates = [], board = null) {
+    if (!Array.isArray(candidates)) {
+        return createEmptyCandidates();
+    }
+
+    return Array.from({ length: 9 }, (_, row) => (
+        Array.from({ length: 9 }, (_, col) => {
+            if (Array.isArray(board) && board?.[row]?.[col] !== 0) {
+                return [];
+            }
+
+            return sanitizeCandidateCell(candidates?.[row]?.[col]);
+        })
+    ));
+}
+
 function buildSessionPayload(body, sessionId) {
     const {
         puzzle,
@@ -110,6 +143,7 @@ function buildSessionPayload(body, sessionId) {
         mistakeCount,
         tipCells,
         tipsRemaining,
+        candidates,
     } = body || {};
 
     if (!sessionId) {
@@ -143,6 +177,7 @@ function buildSessionPayload(body, sessionId) {
         ...(mistakeCount !== undefined ? { mistakeCount: sanitizeMistakeCount(mistakeCount) } : {}),
         ...(tipCells !== undefined ? { tipCells: sanitizeTipCells(tipCells) } : {}),
         ...(tipsRemaining !== undefined ? { tipsRemaining: sanitizeTipsRemaining(tipsRemaining) } : {}),
+        ...(candidates !== undefined ? { candidates: sanitizeCandidates(candidates, board) } : {}),
         puzzle,
         board,
         locked,
@@ -164,6 +199,7 @@ function serializeSession(session) {
         mistakeCount: sanitizeMistakeCount(data.mistakeCount),
         tipCells: sanitizeTipCells(data.tipCells),
         tipsRemaining: sanitizeTipsRemaining(data.tipsRemaining),
+        candidates: sanitizeCandidates(data.candidates, data.board),
         id: data._id,
     };
 }
@@ -189,6 +225,10 @@ async function saveSessionForUser(userId, sessionId, body) {
             payload.tipsRemaining = INITIAL_TIPS_REMAINING;
         }
 
+        if (payload.candidates === undefined && existingSession.candidates === undefined) {
+            payload.candidates = createEmptyCandidates();
+        }
+
         const incomingTime = new Date(payload.clientUpdatedAt).getTime();
         const existingTime = existingSession.clientUpdatedAt ? new Date(existingSession.clientUpdatedAt).getTime() : 0;
 
@@ -206,6 +246,7 @@ async function saveSessionForUser(userId, sessionId, body) {
         mistakeCount: payload.mistakeCount || 0,
         tipCells: payload.tipCells || [],
         tipsRemaining: payload.tipsRemaining ?? INITIAL_TIPS_REMAINING,
+        candidates: payload.candidates || createEmptyCandidates(),
         ...payload,
     });
 

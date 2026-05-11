@@ -8,6 +8,12 @@ import {
 import { DEFAULT_DIFFICULTY, normalizeDifficulty } from '../../utils/difficulty'
 import { isBoardFilled, isSudokuAnswerCorrect, validateMove } from '../../utils/sudoku'
 import { addTipCell, getTipBadge, isTipCell, sanitizeTipsRemaining } from '../../utils/tips'
+import { clearCellCandidates, getCellCandidates, toggleCandidate } from '../../utils/candidates'
+
+const INPUT_MODES = {
+  NORMAL: 'normal',
+  CANDIDATE: 'candidate',
+}
 
 function getKeyboardNumber(event) {
   if (/^[1-9]$/.test(event.key)) {
@@ -82,6 +88,7 @@ export function usePlayGameActions({
   const [isExploding, setIsExploding] = useState(false)
   const [showTipAd, setShowTipAd] = useState(false)
   const [selectedDifficulty, setSelectedDifficulty] = useState(DEFAULT_DIFFICULTY)
+  const [inputMode, setInputMode] = useState(INPUT_MODES.NORMAL)
 
   const hasEditableSelection = !!selected && !isCellLocked(session, selected[0], selected[1]) && !viewOnly
   const tipBadge = getTipBadge(session?.tipsRemaining)
@@ -98,6 +105,7 @@ export function usePlayGameActions({
       setShowTipAd(false)
       setIsExploding(false)
       setSelectedDifficulty(DEFAULT_DIFFICULTY)
+      setInputMode(INPUT_MODES.NORMAL)
     })
 
     return () => {
@@ -121,7 +129,36 @@ export function usePlayGameActions({
     }
   }
 
+  function handleCandidateNumber(num) {
+    if (!selected || !session || viewOnly) {
+      return
+    }
+
+    const [r, c] = selected
+    if (isCellLocked(session, r, c) || session.board[r][c] !== 0) {
+      return
+    }
+
+    setSession(prev => {
+      if (!prev) {
+        return prev
+      }
+
+      const updatedSession = touchSession(prev, {
+        candidates: toggleCandidate(prev.candidates, r, c, num),
+      })
+      saveLocalSession(userId, updatedSession, { pendingSync: true })
+      return updatedSession
+    })
+    setErrorCell(null)
+  }
+
   function handleNumber(num) {
+    if (inputMode === INPUT_MODES.CANDIDATE) {
+      handleCandidateNumber(num)
+      return
+    }
+
     if (!selected || !session || viewOnly) {
       return
     }
@@ -148,6 +185,7 @@ export function usePlayGameActions({
 
       return touchSession(prev, {
         board: newBoard,
+        candidates: clearCellCandidates(prev.candidates, r, c),
         history: [...prev.history, historyEntry],
       })
     })
@@ -187,7 +225,25 @@ export function usePlayGameActions({
       return
     }
 
-    if (session.board[r][c] === 0) return
+    if (session.board[r][c] === 0) {
+      if (getCellCandidates(session.candidates, r, c).length === 0) {
+        return
+      }
+
+      setSession(prev => {
+        if (!prev) {
+          return prev
+        }
+
+        const updatedSession = touchSession(prev, {
+          candidates: clearCellCandidates(prev.candidates, r, c),
+        })
+        saveLocalSession(userId, updatedSession, { pendingSync: true })
+        return updatedSession
+      })
+      setErrorCell(null)
+      return
+    }
 
     setSession(prev => {
       const newBoard = prev.board.map(row => [...row])
@@ -195,6 +251,7 @@ export function usePlayGameActions({
 
       return touchSession(prev, {
         board: newBoard,
+        candidates: clearCellCandidates(prev.candidates, r, c),
         history: [...prev.history, { r, c, prev: prev.board[r][c], next: 0, at: new Date().toISOString() }],
       })
     })
@@ -223,6 +280,7 @@ export function usePlayGameActions({
 
       return touchSession(prev, {
         board: newBoard,
+        candidates: clearCellCandidates(prev.candidates, last.r, last.c),
         history,
       })
     })
@@ -250,6 +308,7 @@ export function usePlayGameActions({
             board: nextBoard,
             tipCells: addTipCell(prev.tipCells, tipCell.row, tipCell.col),
             tipsRemaining: nextTipsRemaining,
+            candidates: clearCellCandidates(prev.candidates, tipCell.row, tipCell.col),
           })
         : prev
     ))
@@ -348,6 +407,10 @@ export function usePlayGameActions({
     setSelectedDifficulty(normalizeDifficulty(value))
   }
 
+  function handleInputModeChange(mode) {
+    setInputMode(mode === INPUT_MODES.CANDIDATE ? INPUT_MODES.CANDIDATE : INPUT_MODES.NORMAL)
+  }
+
   return {
     selected,
     errorCell,
@@ -357,6 +420,7 @@ export function usePlayGameActions({
     isStartingNewGame,
     isExploding,
     selectedDifficulty,
+    inputMode,
     tipBadge,
     hasEditableSelection,
     handleSelect,
@@ -370,6 +434,7 @@ export function usePlayGameActions({
     handleCancelNewGame,
     handleCloseTipAd,
     handleDifficultyChange,
+    handleInputModeChange,
     stopConfetti: () => setIsExploding(false),
   }
 }

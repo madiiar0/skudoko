@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { CANDIDATE_VALUES, getCellCandidates } from '../utils/candidates'
 import { isTipCell } from '../utils/tips'
 
 function isRelated(selected, r, c) {
@@ -25,12 +26,13 @@ const C = {
 
   numUser:   '#C8D4E8', // cool blue-white for user-entered
   numLocked: '#E8A040', // golden amber for given numbers
-  numTip:    '#C8D4E8', // soft green for revealed tip cells
+  numTip:    '#EFFAD0', // soft green for revealed tip cells
+  numCandidate: '#8A98AA', // subtle pencil marks
   numSelected: '#FFFFFF', // white — readable on orange bg regardless of locked/user
   numError:  '#FF7090', // bright pink-red on dark red bg
 }
 
-export default function SudokuGrid({ board, locked, tipCells = [], selected, onSelect, error }) {
+export default function SudokuGrid({ board, locked, candidates = [], tipCells = [], selected, onSelect, error }) {
   const [hovered, setHovered] = useState(null)
   const selectedNum = selected ? board[selected[0]][selected[1]] : 0
 
@@ -77,6 +79,8 @@ export default function SudokuGrid({ board, locked, tipCells = [], selected, onS
                 const r = boxRow * 3 + cellRow
                 const c = boxCol * 3 + cellCol
                 const val = board[r][c]
+                const cellCandidates = val === 0 ? getCellCandidates(candidates, r, c) : []
+                const hasCandidates = cellCandidates.length > 0
 
                 const isSelected = !!(selected && selected[0] === r && selected[1] === c)
                 const isLocked   = locked[r][c]
@@ -138,7 +142,30 @@ export default function SudokuGrid({ board, locked, tipCells = [], selected, onS
                       zIndex: isSelected || isErr ? 1 : 0,
                     }}
                   >
-                    {val !== 0 ? val : ''}
+                    {val !== 0 ? val : hasCandidates ? (
+                      <div
+                        style={{
+                          width: '82%',
+                          height: '82%',
+                          display: 'grid',
+                          gridTemplateColumns: 'repeat(3, 1fr)',
+                          gridTemplateRows: 'repeat(3, 1fr)',
+                          alignItems: 'center',
+                          justifyItems: 'center',
+                          color: isSelected ? '#FFE1C7' : C.numCandidate,
+                          fontSize: 'clamp(6px, 0.95vw, 10px)',
+                          fontWeight: 800,
+                          lineHeight: 1,
+                          letterSpacing: '-0.02em',
+                        }}
+                      >
+                        {CANDIDATE_VALUES.map(candidate => (
+                          <span key={candidate}>
+                            {cellCandidates.includes(candidate) ? candidate : ''}
+                          </span>
+                        ))}
+                      </div>
+                    ) : ''}
                   </div>
                 )
               })}

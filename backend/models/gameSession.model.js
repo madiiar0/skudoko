@@ -1,5 +1,11 @@
 import mongoose from 'mongoose';
 
+function createEmptyCandidates() {
+    return Array.from({ length: 9 }, () => (
+        Array.from({ length: 9 }, () => [])
+    ));
+}
+
 const historyEntrySchema = new mongoose.Schema({
     r: {
         type: Number,
@@ -70,6 +76,10 @@ const gameSessionSchema = new mongoose.Schema({
         type: Number,
         default: 3,
         min: 0,
+    },
+    candidates: {
+        type: [[[Number]]],
+        default: createEmptyCandidates,
     },
     puzzle: {
         type: [[Number]],

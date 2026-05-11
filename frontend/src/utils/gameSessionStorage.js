@@ -1,5 +1,6 @@
 import { DEFAULT_DIFFICULTY, normalizeDifficulty } from './difficulty'
 import { INITIAL_TIPS_REMAINING, normalizeTipCells, sanitizeTipsRemaining } from './tips'
+import { createEmptyCandidates, hasCandidateNotes, normalizeCandidates } from './candidates'
 
 const STORAGE_VERSION = 'v1'
 
@@ -184,6 +185,7 @@ export function createGameSession({ puzzle, solution, difficulty = DEFAULT_DIFFI
     mistakeCount: 0,
     tipCells: [],
     tipsRemaining: INITIAL_TIPS_REMAINING,
+    candidates: createEmptyCandidates(),
     puzzle: cloneMatrix(puzzle),
     board: cloneMatrix(puzzle),
     locked,
@@ -227,6 +229,7 @@ export function normalizeSession(raw, options = {}) {
     mistakeCount: sanitizeMistakeCount(raw.mistakeCount),
     tipCells: normalizeTipCells(raw.tipCells),
     tipsRemaining: sanitizeTipsRemaining(raw.tipsRemaining),
+    candidates: normalizeCandidates(raw.candidates, board),
     puzzle: cloneMatrix(puzzle),
     board: cloneMatrix(board),
     locked: cloneMatrix(locked),
@@ -272,6 +275,7 @@ export function toSessionPayload(session) {
     mistakeCount: sanitizeMistakeCount(session.mistakeCount),
     tipCells: normalizeTipCells(session.tipCells),
     tipsRemaining: sanitizeTipsRemaining(session.tipsRemaining),
+    candidates: normalizeCandidates(session.candidates, session.board),
     puzzle: session.puzzle,
     board: session.board,
     locked: session.locked,
@@ -299,6 +303,10 @@ export function chooseNewestSession(localSession, remoteSession) {
 
   const localTime = getSessionUpdatedTime(localSession)
   const remoteTime = getSessionUpdatedTime(remoteSession)
+
+  if (localSession.pendingSync && hasCandidateNotes(localSession.candidates) && !hasCandidateNotes(remoteSession.candidates)) {
+    return localSession
+  }
 
   if (localTime > remoteTime) {
     return localSession

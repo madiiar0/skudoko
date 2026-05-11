@@ -95,6 +95,46 @@ function NumBtn({ num, onClick, disabled }) {
   )
 }
 
+function ModeSwitcher({ inputMode, onInputModeChange, disabled }) {
+  const modes = [
+    { value: 'normal', label: 'Normal' },
+    { value: 'candidate', label: 'Candidate' },
+  ]
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 7 }}>
+      {modes.map(mode => {
+        const active = inputMode === mode.value
+
+        return (
+          <button
+            key={mode.value}
+            type="button"
+            disabled={disabled}
+            onClick={() => onInputModeChange(mode.value)}
+            style={{
+              minHeight: 32,
+              borderRadius: 7,
+              border: `1px solid ${active ? '#FF7A1A' : '#243450'}`,
+              background: active
+                ? 'linear-gradient(135deg, rgba(255,122,26,0.24) 0%, rgba(255,61,0,0.18) 100%)'
+                : '#1A2840',
+              color: disabled ? '#2A3D52' : active ? '#FFE1C7' : '#7A8699',
+              fontSize: 12,
+              fontWeight: 800,
+              letterSpacing: '0.2px',
+              cursor: disabled ? 'not-allowed' : 'pointer',
+              transition: 'background 0.15s, color 0.15s, border-color 0.15s',
+            }}
+          >
+            {mode.label}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
 function WideActionButton({ icon: Icon, label, onClick, disabled = false, variant = 'primary' }) {
   const [hov, setHov] = useState(false)
   const primary = variant === 'primary'
@@ -154,6 +194,8 @@ export default function NumberPanel({
   canUndo,
   hasSelection,
   tipBadge,
+  inputMode = 'normal',
+  onInputModeChange,
   disabled = false,
   checking = false,
 }) {
@@ -165,6 +207,12 @@ export default function NumberPanel({
         <IconBtn icon={Undo2} label="Back" onClick={onUndo} disabled={disabled || !canUndo} />
         <IconBtn icon={Lightbulb} label="Tip" onClick={onTip} disabled={disabled} badge={tipBadge} />
       </div>
+
+      <ModeSwitcher
+        inputMode={inputMode}
+        onInputModeChange={onInputModeChange}
+        disabled={disabled}
+      />
 
       {/* Number pad — layout controlled by .num-grid CSS (responsive) */}
       <div className="num-grid">

@@ -8,6 +8,14 @@ import {
 } from '../src/utils/sudoku.js'
 import { getSudokuGenDifficulty, normalizeDifficulty } from '../src/utils/difficulty.js'
 import { addTipCell, getTipBadge, isTipCell, normalizeTipCells, sanitizeTipsRemaining } from '../src/utils/tips.js'
+import {
+  clearCellCandidates,
+  createEmptyCandidates,
+  getCellCandidates,
+  hasCandidateNotes,
+  normalizeCandidates,
+  toggleCandidate,
+} from '../src/utils/candidates.js'
 
 function flatten(board) {
   return board.flat()
@@ -35,6 +43,17 @@ assert.equal(isTipCell(addTipCell([], 4, 8), 4, 8), true)
 assert.equal(sanitizeTipsRemaining(undefined), 3)
 assert.equal(getTipBadge(0), 'Ad')
 assert.equal(getTipBadge(2), '2')
+
+const emptyCandidates = createEmptyCandidates()
+assert.equal(emptyCandidates.length, 9)
+assert.equal(emptyCandidates.every(row => row.length === 9), true)
+assert.deepEqual(getCellCandidates(toggleCandidate(emptyCandidates, 0, 0, 5), 0, 0), [5])
+assert.deepEqual(getCellCandidates(toggleCandidate(toggleCandidate(emptyCandidates, 0, 0, 5), 0, 0, 5), 0, 0), [])
+assert.deepEqual(normalizeCandidates([[['7', 2, 2, 10, 'x']]])[0][0], [2, 7])
+assert.deepEqual(normalizeCandidates([[['2']]], [[1]])[0][0], [])
+assert.equal(hasCandidateNotes(emptyCandidates), false)
+assert.equal(hasCandidateNotes(toggleCandidate(emptyCandidates, 1, 1, 3)), true)
+assert.deepEqual(getCellCandidates(clearCellCandidates(toggleCandidate(emptyCandidates, 1, 1, 3), 1, 1), 1, 1), [])
 
 const generated = generatePuzzle('easy')
 assert.equal(generated.puzzle.length, 9)
