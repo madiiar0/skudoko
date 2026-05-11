@@ -26,7 +26,7 @@ const C = {
 
   numUser:   '#C8D4E8', // cool blue-white for user-entered
   numLocked: '#E8A040', // golden amber for given numbers
-  numTip:    '#EFFAD0', // soft green for revealed tip cells
+  numTip:    '#cef366', // soft green for revealed tip cells
   numCandidate: '#8A98AA', // subtle pencil marks
   numSelected: '#FFFFFF', // white — readable on orange bg regardless of locked/user
   numError:  '#FF7090', // bright pink-red on dark red bg

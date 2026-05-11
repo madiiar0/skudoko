@@ -68,6 +68,11 @@ const gameSessionSchema = new mongoose.Schema({
         default: 0,
         min: 0,
     },
+    tipsUsed: {
+        type: Number,
+        default: 0,
+        min: 0,
+    },
     tipCells: {
         type: [tipCellSchema],
         default: [],

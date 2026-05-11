@@ -59,6 +59,10 @@ function sanitizeMistakeCount(mistakeCount) {
     return Math.max(0, Math.floor(Number(mistakeCount) || 0));
 }
 
+function sanitizeTipsUsed(tipsUsed) {
+    return Math.max(0, Math.floor(Number(tipsUsed) || 0));
+}
+
 function normalizeTipIndex(value) {
     const number = Number(value);
     return Number.isInteger(number) && number >= 0 && number < 9 ? number : null;
@@ -141,6 +145,7 @@ function buildSessionPayload(body, sessionId) {
         name,
         difficulty,
         mistakeCount,
+        tipsUsed,
         tipCells,
         tipsRemaining,
         candidates,
@@ -175,6 +180,7 @@ function buildSessionPayload(body, sessionId) {
         ...(name !== undefined ? { name: sanitizeSessionName(name) } : {}),
         ...(difficulty !== undefined ? { difficulty: sanitizeDifficulty(difficulty) } : {}),
         ...(mistakeCount !== undefined ? { mistakeCount: sanitizeMistakeCount(mistakeCount) } : {}),
+        ...(tipsUsed !== undefined ? { tipsUsed: sanitizeTipsUsed(tipsUsed) } : {}),
         ...(tipCells !== undefined ? { tipCells: sanitizeTipCells(tipCells) } : {}),
         ...(tipsRemaining !== undefined ? { tipsRemaining: sanitizeTipsRemaining(tipsRemaining) } : {}),
         ...(candidates !== undefined ? { candidates: sanitizeCandidates(candidates, board) } : {}),
@@ -197,6 +203,7 @@ function serializeSession(session) {
         name: sanitizeSessionName(data.name),
         difficulty: sanitizeDifficulty(data.difficulty),
         mistakeCount: sanitizeMistakeCount(data.mistakeCount),
+        tipsUsed: sanitizeTipsUsed(data.tipsUsed),
         tipCells: sanitizeTipCells(data.tipCells),
         tipsRemaining: sanitizeTipsRemaining(data.tipsRemaining),
         candidates: sanitizeCandidates(data.candidates, data.board),
@@ -215,6 +222,10 @@ async function saveSessionForUser(userId, sessionId, body) {
 
         if (payload.mistakeCount === undefined && existingSession.mistakeCount === undefined) {
             payload.mistakeCount = 0;
+        }
+
+        if (payload.tipsUsed === undefined && existingSession.tipsUsed === undefined) {
+            payload.tipsUsed = 0;
         }
 
         if (payload.tipCells === undefined && existingSession.tipCells === undefined) {
@@ -244,6 +255,7 @@ async function saveSessionForUser(userId, sessionId, body) {
         userId,
         difficulty: payload.difficulty || 'medium',
         mistakeCount: payload.mistakeCount || 0,
+        tipsUsed: payload.tipsUsed || 0,
         tipCells: payload.tipCells || [],
         tipsRemaining: payload.tipsRemaining ?? INITIAL_TIPS_REMAINING,
         candidates: payload.candidates || createEmptyCandidates(),

@@ -7,6 +7,7 @@ import {
   validateMove,
 } from '../src/utils/sudoku.js'
 import { getSudokuGenDifficulty, normalizeDifficulty } from '../src/utils/difficulty.js'
+import { createGameSession, normalizeSession, toSessionPayload } from '../src/utils/gameSessionStorage.js'
 import { addTipCell, getTipBadge, isTipCell, normalizeTipCells, sanitizeTipsRemaining } from '../src/utils/tips.js'
 import {
   clearCellCandidates,
@@ -62,6 +63,11 @@ assert.equal(flatten(generated.puzzle).length, 81)
 assert.equal(flatten(generated.solution).length, 81)
 assert.equal(flatten(generated.puzzle).some(value => value === 0), true)
 assert.equal(flatten(generated.solution).every(value => value >= 1 && value <= 9), true)
+
+const gameSession = createGameSession({ puzzle: generated.puzzle, solution: generated.solution, difficulty: 'easy' })
+assert.equal(gameSession.tipsUsed, 0)
+assert.equal(normalizeSession({ ...gameSession, tipsUsed: undefined })?.tipsUsed, 0)
+assert.equal(toSessionPayload({ ...gameSession, tipsUsed: 3 }).tipsUsed, 3)
 
 const solution = cloneBoard(generated.solution)
 const wrongCellValue = nextDifferentDigit(solution[0][0])

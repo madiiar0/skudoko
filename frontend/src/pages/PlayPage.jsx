@@ -92,7 +92,7 @@ export default function PlayPage() {
           error={errorCell}
         />
         <div className="play-controls-stack">
-          <p className="mistake-count">Mistake count: {session.mistakeCount || 0}</p>
+          <p className="mistake-count">Mistakes: {session.mistakeCount || 0} | Tips used: {session.tipsUsed || 0}</p>
           <NumberPanel
             onNumber={handleNumber}
             onRemove={handleRemove}

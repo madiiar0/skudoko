@@ -1,6 +1,6 @@
-import { DEFAULT_DIFFICULTY, normalizeDifficulty } from './difficulty'
-import { INITIAL_TIPS_REMAINING, normalizeTipCells, sanitizeTipsRemaining } from './tips'
-import { createEmptyCandidates, hasCandidateNotes, normalizeCandidates } from './candidates'
+import { DEFAULT_DIFFICULTY, normalizeDifficulty } from './difficulty.js'
+import { INITIAL_TIPS_REMAINING, normalizeTipCells, sanitizeTipsRemaining } from './tips.js'
+import { createEmptyCandidates, hasCandidateNotes, normalizeCandidates } from './candidates.js'
 
 const STORAGE_VERSION = 'v1'
 
@@ -137,6 +137,10 @@ function sanitizeMistakeCount(mistakeCount) {
   return Math.max(0, Math.floor(Number(mistakeCount) || 0))
 }
 
+function sanitizeTipsUsed(tipsUsed) {
+  return Math.max(0, Math.floor(Number(tipsUsed) || 0))
+}
+
 function sanitizeHistory(history = []) {
   if (!Array.isArray(history)) {
     return []
@@ -183,6 +187,7 @@ export function createGameSession({ puzzle, solution, difficulty = DEFAULT_DIFFI
     name: 'Untitled',
     difficulty: normalizeDifficulty(difficulty),
     mistakeCount: 0,
+    tipsUsed: 0,
     tipCells: [],
     tipsRemaining: INITIAL_TIPS_REMAINING,
     candidates: createEmptyCandidates(),
@@ -227,6 +232,7 @@ export function normalizeSession(raw, options = {}) {
     name: sanitizeSessionName(raw.name),
     difficulty: normalizeDifficulty(raw.difficulty),
     mistakeCount: sanitizeMistakeCount(raw.mistakeCount),
+    tipsUsed: sanitizeTipsUsed(raw.tipsUsed),
     tipCells: normalizeTipCells(raw.tipCells),
     tipsRemaining: sanitizeTipsRemaining(raw.tipsRemaining),
     candidates: normalizeCandidates(raw.candidates, board),
@@ -273,6 +279,7 @@ export function toSessionPayload(session) {
     name: sanitizeSessionName(session.name),
     difficulty: normalizeDifficulty(session.difficulty),
     mistakeCount: sanitizeMistakeCount(session.mistakeCount),
+    tipsUsed: sanitizeTipsUsed(session.tipsUsed),
     tipCells: normalizeTipCells(session.tipCells),
     tipsRemaining: sanitizeTipsRemaining(session.tipsRemaining),
     candidates: normalizeCandidates(session.candidates, session.board),

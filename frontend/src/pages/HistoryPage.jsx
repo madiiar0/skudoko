@@ -214,15 +214,16 @@ export default function HistoryPage() {
                   <div className="history-meta">
                     <span>Moves: {session.history.length}</span>
                     <span>Mistakes: {session.mistakeCount || 0}</span>
+                    <span>Tips used: {session.tipsUsed || 0}</span>
                     <span>Elapsed: {formatDuration(session.elapsedSeconds)}</span>
-                    <span>Updated: {formatDateTime(session.updatedAt || session.clientUpdatedAt)}</span>
+                    {/*<span>Updated: {formatDateTime(session.updatedAt || session.clientUpdatedAt)}</span>*/}
                     {completed ? <span>Completed: {formatDateTime(session.completedAt)}</span> : null}
-                    {session.pendingSync ? (
-                      <span className="history-sync">
-                        <RefreshCw size={13} />
-                        Pending sync
-                      </span>
-                    ) : null}
+                    {/*{session.pendingSync ? (*/}
+                    {/*  <span className="history-sync">*/}
+                    {/*    <RefreshCw size={13} />*/}
+                    {/*    Pending sync*/}
+                    {/*  </span>*/}
+                    {/*) : null}*/}
                   </div>
                 </div>
 

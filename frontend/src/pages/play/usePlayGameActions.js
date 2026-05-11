@@ -308,6 +308,7 @@ export function usePlayGameActions({
             board: nextBoard,
             tipCells: addTipCell(prev.tipCells, tipCell.row, tipCell.col),
             tipsRemaining: nextTipsRemaining,
+            tipsUsed: (prev.tipsUsed || 0) + 1,
             candidates: clearCellCandidates(prev.candidates, tipCell.row, tipCell.col),
           })
         : prev
