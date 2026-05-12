@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 
+import AICoach from '../components/AICoach'
 import SudokuGrid from '../components/SudokuGrid'
 import NumberPanel from '../components/NumberPanel'
 import PageTopbar from '../components/PageTopbar'
@@ -8,6 +9,7 @@ import NewGameConfirmModal from './play/NewGameConfirmModal'
 import TipAdModal from './play/TipAdModal'
 import { usePlayPageController } from './play/usePlayPageController'
 import { useAuth } from '../hooks/useAuth'
+import { createAICoachGameContext } from '../utils/aiCoachContext'
 
 export default function PlayPage() {
   const { user } = useAuth()
@@ -137,6 +139,14 @@ export default function PlayPage() {
       ) : null}
 
       {showTipAd ? <TipAdModal onClose={handleCloseTipAd} /> : null}
+      <AICoach
+        gameContext={createAICoachGameContext({
+          gameType: 'normal',
+          session,
+          selected,
+          viewOnly,
+        })}
+      />
     </div>
   )
 }

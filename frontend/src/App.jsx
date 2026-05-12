@@ -6,15 +6,16 @@ import ProtectedLayout from './components/ProtectedLayout'
 import { ProtectedRoute, PublicOnlyRoute } from './components/RouteGuards'
 import { AuthProvider } from './context/AuthContext'
 import PlayPage from './pages/PlayPage'
-import PlaceholderPage from './pages/PlaceholderPage'
+import BlogDetailPage from './pages/BlogDetailPage'
+import BlogPage from './pages/BlogPage'
 import DailyChallengePage from './pages/DailyChallengePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import ProfilePage from './pages/ProfilePage'
 import HistoryPage from './pages/HistoryPage'
+import LandingPage from './pages/LandingPage'
 import LeaderboardPage from './pages/LeaderboardPage'
 import UpgradePage from './pages/UpgradePage'
-import { Palette } from 'lucide-react'
 import './index.css'
 
 export default function App() {
@@ -24,6 +25,8 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
+          <Route path="/" element={<LandingPage />} />
+
           <Route element={<PublicOnlyRoute />}>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
@@ -38,15 +41,12 @@ export default function App() {
                 />
               }
             >
-              <Route path="/" element={<Navigate to="/play" replace />} />
               <Route path="/play" element={<PlayPage />} />
               <Route path="/play/:sessionId" element={<PlayPage />} />
               <Route path="/history" element={<HistoryPage />} />
               <Route path="/daily-challenge" element={<DailyChallengePage />} />
-              <Route
-                path="/skins"
-                element={<PlaceholderPage title="Skins" icon={<Palette size={40} />} />}
-              />
+              <Route path="/blogs" element={<BlogPage />} />
+              <Route path="/blogs/:slug" element={<BlogDetailPage />} />
               <Route path="/leaderboard" element={<LeaderboardPage />} />
               <Route path="/upgrade" element={<UpgradePage />} />
               <Route path="/profile" element={<ProfilePage />} />

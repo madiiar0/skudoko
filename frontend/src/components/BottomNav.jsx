@@ -1,12 +1,12 @@
 import { NavLink } from 'react-router-dom'
-import { Gamepad2, CalendarDays, Palette, Trophy, History } from 'lucide-react'
+import { Gamepad2, CalendarDays, Trophy, History, BookOpen } from 'lucide-react'
 
 const NAV_ITEMS = [
   { to: '/play', icon: Gamepad2, label: 'Play' },
-  { to: '/history', icon: History, label: 'History' },
   { to: '/daily-challenge', icon: CalendarDays, label: 'Daily' },
-  { to: '/skins', icon: Palette, label: 'Skins' },
   { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
+  { to: '/history', icon: History, label: 'History' },
+  { to: '/blogs', icon: BookOpen, label: 'Blogs' },
 ]
 
 export default function BottomNav() {

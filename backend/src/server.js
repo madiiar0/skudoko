@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 
 import { connectDB } from "../db/connectDB.js";
+import aiCoachRoutes from "../routes/aiCoach.route.js";
 import authRoutes from "../routes/auth.route.js";
 import dailyChallengeRoutes from "../routes/dailyChallenge.route.js";
 import gameSessionRoutes from "../routes/gameSession.route.js";
@@ -25,6 +26,7 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/sessions", gameSessionRoutes);
 app.use("/api/daily-challenge", dailyChallengeRoutes);
+app.use("/api/ai-coach", aiCoachRoutes);
 
 const startServer = async () => {
   await connectDB();

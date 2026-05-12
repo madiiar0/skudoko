@@ -1,13 +1,13 @@
-import { NavLink } from 'react-router-dom'
-import { Gamepad2, CalendarDays, Palette, Trophy, ChevronLeft, ChevronRight, History } from 'lucide-react'
+import { Link, NavLink } from 'react-router-dom'
+import { Gamepad2, CalendarDays, Trophy, ChevronLeft, ChevronRight, History, BookOpen } from 'lucide-react'
 import { useState } from 'react'
 
 const NAV_ITEMS = [
   { to: '/play', label: 'Play', icon: Gamepad2 },
-  { to: '/history', label: 'History', icon: History },
   { to: '/daily-challenge', label: 'Daily Challenge', icon: CalendarDays },
   { to: '/leaderboard', label: 'Leaderboard', icon: Trophy },
-  { to: '/skins', label: 'Skins', icon: Palette },
+  { to: '/history', label: 'History', icon: History },
+  { to: '/blogs', label: 'Blogs', icon: BookOpen },
 ]
 
 function NavItem({ to, label, icon: Icon, open }) {
@@ -81,7 +81,7 @@ export default function Sidebar({ open, onToggle }) {
         }}
       >
         {open && (
-          <span style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.4px', whiteSpace: 'nowrap', color: '#E8EDF5' }}>
+          <Link to="/" style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.4px', whiteSpace: 'nowrap', color: '#E8EDF5' }}>
             Sudok
             <span
               style={{
@@ -92,7 +92,7 @@ export default function Sidebar({ open, onToggle }) {
             >
               o
             </span>
-          </span>
+          </Link>
         )}
         <button
           onClick={onToggle}

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Clock3, Pause, Play } from 'lucide-react'
 import toast from 'react-hot-toast'
 
+import AICoach from '../components/AICoach'
 import NumberPanel from '../components/NumberPanel'
 import PageTopbar from '../components/PageTopbar'
 import SudokuGrid from '../components/SudokuGrid'
@@ -28,6 +29,7 @@ import CompletionConfetti from './play/CompletionConfetti'
 import TipAdModal from './play/TipAdModal'
 import { usePlayGameActions } from './play/usePlayGameActions'
 import { formatChallengeTime } from './daily/time'
+import { createAICoachGameContext } from '../utils/aiCoachContext'
 
 const MISTAKE_PENALTY_SECONDS = 30
 const TIP_PENALTY_SECONDS = 60
@@ -415,7 +417,7 @@ export default function DailyChallengePage() {
   }
 
   return (
-    <div className="play-page">
+    <div className="play-page daily-challenge-page">
       <PageTopbar
         title="Daily Challenge"
         subtitle={
@@ -492,6 +494,16 @@ export default function DailyChallengePage() {
 
       {isPaused ? <PauseModal onResume={() => setIsPaused(false)} /> : null}
       {gameActions.showTipAd ? <TipAdModal onClose={gameActions.handleCloseTipAd} /> : null}
+      {attempt ? (
+        <AICoach
+          gameContext={createAICoachGameContext({
+            gameType: 'daily',
+            session: attempt,
+            selected: gameActions.selected,
+            viewOnly,
+          })}
+        />
+      ) : null}
     </div>
   )
 }
