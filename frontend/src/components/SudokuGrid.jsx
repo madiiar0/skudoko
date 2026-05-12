@@ -11,25 +11,23 @@ function isRelated(selected, r, c) {
   return Math.floor(sr / 3) === Math.floor(r / 3) && Math.floor(sc / 3) === Math.floor(c / 3)
 }
 
-// ── Cell color constants ──────────────────────────────────────────────────────
-// Priority (highest wins): error > selected > hover > same-num > related > locked > default
 const C = {
-  bgDefault:      '#111B2A', // calm dark midnight blue
-  bgLocked:       '#152130', // slightly elevated — given cells feel anchored
-  bgRelated:      '#1C2D3E', // blue step-up — "in the selection zone"
-  bgSameNum:      '#2A1A00', // dark warm amber — "same number"
-  bgHoverDefault: '#1E2D40', // brightened blue for hover on default/locked
-  bgHoverRelated: '#233848', // brightened blue for hover on related cells
-  bgHoverSameNum: '#382300', // brightened amber for hover on same-num cells
-  bgSelected:     '#8C3D00', // strong rich orange — dominant, unmissable
-  bgError:        '#3A0F1C', // deep crimson
+  bgDefault: 'var(--cell-bg)',
+  bgLocked: 'var(--cell-locked)',
+  bgRelated: 'var(--cell-related)',
+  bgSameNum: 'var(--cell-same-num)',
+  bgHoverDefault: 'var(--cell-hover)',
+  bgHoverRelated: 'var(--cell-hover-related)',
+  bgHoverSameNum: 'var(--cell-hover-same-num)',
+  bgSelected: 'var(--cell-selected)',
+  bgError: 'var(--cell-error)',
 
-  numUser:   '#C8D4E8', // cool blue-white for user-entered
-  numLocked: '#E8A040', // golden amber for given numbers
-  numTip:    '#cef366', // soft green for revealed tip cells
-  numCandidate: '#8A98AA', // subtle pencil marks
-  numSelected: '#FFFFFF', // white — readable on orange bg regardless of locked/user
-  numError:  '#FF7090', // bright pink-red on dark red bg
+  numUser: 'var(--num-user)',
+  numLocked: 'var(--num-locked)',
+  numTip: 'var(--num-tip)',
+  numCandidate: 'var(--num-candidate)',
+  numSelected: 'var(--num-selected)',
+  numError: 'var(--num-error)',
 }
 
 export default function SudokuGrid({ board, locked, candidates = [], tipCells = [], selected, onSelect, error }) {
@@ -45,7 +43,7 @@ export default function SudokuGrid({ board, locked, candidates = [], tipCells = 
      */
     <div
       className="board-size"
-      style={{ border: '2px solid #FF7A1A', flexShrink: 0 }}
+      style={{ border: '2px solid var(--grid-outer)', flexShrink: 0 }}
     >
       <div
         style={{
@@ -53,7 +51,7 @@ export default function SudokuGrid({ board, locked, candidates = [], tipCells = 
           gridTemplateColumns: 'repeat(3, 1fr)',
           gridTemplateRows: 'repeat(3, 1fr)',
           gap: 2,
-          background: '#FF7A1A',
+          background: 'var(--grid-thick)',
           width: '100%',
           height: '100%',
         }}
@@ -70,7 +68,7 @@ export default function SudokuGrid({ board, locked, candidates = [], tipCells = 
                 gridTemplateColumns: 'repeat(3, 1fr)',
                 gridTemplateRows: 'repeat(3, 1fr)',
                 gap: 1,
-                background: '#1E3050',
+                background: 'var(--grid-thin)',
               }}
             >
               {Array.from({ length: 9 }, (_, cellIdx) => {
@@ -116,8 +114,8 @@ export default function SudokuGrid({ board, locked, candidates = [], tipCells = 
 
                 // Outline for selected / error — drawn inset so it never overflows
                 let outline = 'none'
-                if (isSelected) outline = '2px solid #FF8C00'
-                if (isErr)      outline = '2px solid #FF4D6D'
+                if (isSelected) outline = '2px solid var(--accent)'
+                if (isErr)      outline = '2px solid var(--error)'
 
                 return (
                   <div
@@ -152,7 +150,7 @@ export default function SudokuGrid({ board, locked, candidates = [], tipCells = 
                           gridTemplateRows: 'repeat(3, 1fr)',
                           alignItems: 'center',
                           justifyItems: 'center',
-                          color: isSelected ? '#FFE1C7' : C.numCandidate,
+                          color: isSelected ? 'var(--accent-text)' : C.numCandidate,
                           fontSize: 'clamp(6px, 0.95vw, 10px)',
                           fontWeight: 800,
                           lineHeight: 1,

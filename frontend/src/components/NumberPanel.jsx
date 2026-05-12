@@ -19,9 +19,9 @@ function IconBtn({ icon: Icon, label, onClick, disabled, badge }) {
         gap: 5,
         padding: '10px 6px',
         borderRadius: 7,
-        background: disabled ? '#111E2E' : hov ? '#25384F' : '#1A2840',
-        border: `1px solid ${disabled ? '#172236' : hov ? '#35506A' : '#243450'}`,
-        color: disabled ? '#2A3D52' : hov ? '#C8D0DC' : '#7A8699',
+        background: disabled ? 'var(--btn-disabled-bg)' : hov ? 'var(--btn-bg-hover)' : 'var(--btn-bg)',
+        border: `1px solid ${disabled ? 'var(--btn-disabled-border)' : hov ? 'var(--border-strong)' : 'var(--btn-border)'}`,
+        color: disabled ? 'var(--btn-disabled-text)' : hov ? 'var(--nav-hover-text)' : 'var(--text-secondary)',
         fontSize: 11,
         fontWeight: 600,
         letterSpacing: '0.2px',
@@ -46,12 +46,12 @@ function IconBtn({ icon: Icon, label, onClick, disabled, badge }) {
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: disabled ? '#172236' : '#FF7A1A',
-            color: disabled ? '#4A5568' : '#fff',
+            background: disabled ? 'var(--btn-disabled-border)' : 'var(--accent)',
+            color: disabled ? 'var(--text-muted)' : 'var(--text-inverse)',
             fontSize: 10,
             fontWeight: 800,
             lineHeight: 1,
-            boxShadow: '0 2px 8px rgba(2, 7, 16, 0.38)',
+            boxShadow: '0 2px 8px var(--btn-shadow)',
             zIndex: 2,
           }}
         >
@@ -79,9 +79,9 @@ function NumBtn({ num, onClick, disabled }) {
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 6,
-        background: disabled ? '#111E2E' : hov ? '#2D1E08' : '#1A2840',
-        border: `1px solid ${disabled ? '#172236' : hov ? '#FF7A1A' : '#243450'}`,
-        color: disabled ? '#2A3D52' : hov ? '#FF7A1A' : '#C8D4E0',
+        background: disabled ? 'var(--btn-disabled-bg)' : hov ? 'var(--btn-warning-hover)' : 'var(--btn-bg)',
+        border: `1px solid ${disabled ? 'var(--btn-disabled-border)' : hov ? 'var(--accent)' : 'var(--btn-border)'}`,
+        color: disabled ? 'var(--btn-disabled-text)' : hov ? 'var(--accent)' : 'var(--btn-secondary-text)',
         fontSize: 19,
         fontWeight: 700,
         aspectRatio: '1',
@@ -115,11 +115,11 @@ function ModeSwitcher({ inputMode, onInputModeChange, disabled }) {
             style={{
               minHeight: 32,
               borderRadius: 7,
-              border: `1px solid ${active ? '#FF7A1A' : '#243450'}`,
+              border: `1px solid ${active ? 'var(--accent)' : 'var(--btn-border)'}`,
               background: active
-                ? 'linear-gradient(135deg, rgba(255,122,26,0.24) 0%, rgba(255,61,0,0.18) 100%)'
-                : '#1A2840',
-              color: disabled ? '#2A3D52' : active ? '#FFE1C7' : '#7A8699',
+                ? 'linear-gradient(135deg, var(--accent-soft) 0%, rgba(255,61,0,0.12) 100%)'
+                : 'var(--btn-bg)',
+              color: disabled ? 'var(--btn-disabled-text)' : active ? 'var(--accent-text)' : 'var(--text-secondary)',
               fontSize: 12,
               fontWeight: 800,
               letterSpacing: '0.2px',
@@ -153,18 +153,18 @@ function WideActionButton({ icon: Icon, label, onClick, disabled = false, varian
         padding: '13px',
         borderRadius: 7,
         background: disabled
-          ? '#111E2E'
+          ? 'var(--btn-disabled-bg)'
           : primary
             ? hov
-              ? 'linear-gradient(135deg, #FF8A2A 0%, #FF5C00 100%)'
-              : 'linear-gradient(135deg, #FF7A1A 0%, #FF3D00 100%)'
+              ? 'linear-gradient(135deg, var(--accent-hover) 0%, var(--accent-strong) 100%)'
+              : 'linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%)'
             : hov
-              ? '#25384F'
-              : '#1A2840',
+              ? 'var(--btn-bg-hover)'
+              : 'var(--btn-bg)',
         border: primary
           ? '1px solid transparent'
-          : `1px solid ${disabled ? '#172236' : hov ? '#35506A' : '#243450'}`,
-        color: disabled ? '#2A3D52' : primary ? '#fff' : '#C8D4E8',
+          : `1px solid ${disabled ? 'var(--btn-disabled-border)' : hov ? 'var(--border-strong)' : 'var(--btn-border)'}`,
+        color: disabled ? 'var(--btn-disabled-text)' : primary ? 'var(--text-inverse)' : 'var(--btn-secondary-text)',
         fontSize: 14,
         fontWeight: 700,
         letterSpacing: '0.2px',

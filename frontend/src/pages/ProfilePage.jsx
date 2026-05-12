@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
+import { Moon, Sun } from 'lucide-react'
 
 import PageTopbar from '../components/PageTopbar'
 import { useAuth } from '../hooks/useAuth'
+import { useTheme } from '../hooks/useTheme'
 
 function formatDateTime(value) {
   if (!value) {
@@ -45,6 +47,7 @@ function CancelProModal({ isSubmitting, onCancel, onConfirm }) {
 export default function ProfilePage() {
   const navigate = useNavigate()
   const { user, logout, cancelPro } = useAuth()
+  const { theme, setTheme } = useTheme()
   const [submitting, setSubmitting] = useState(false)
   const [proSubmitting, setProSubmitting] = useState(false)
   const [showCancelPro, setShowCancelPro] = useState(false)
@@ -110,6 +113,33 @@ export default function ProfilePage() {
               <strong className="profile-field-value">{field.value}</strong>
             </div>
           ))}
+        </div>
+
+        <div className="theme-settings-card">
+          <div>
+            <span className="profile-field-label">Appearance</span>
+            <strong className="profile-field-value">Theme</strong>
+          </div>
+          <div className="theme-toggle" role="group" aria-label="Choose app theme">
+            <button
+              type="button"
+              className={theme === 'dark' ? 'theme-toggle-option theme-toggle-option-active' : 'theme-toggle-option'}
+              onClick={() => setTheme('dark')}
+              aria-pressed={theme === 'dark'}
+            >
+              <Moon size={16} />
+              Dark
+            </button>
+            <button
+              type="button"
+              className={theme === 'light' ? 'theme-toggle-option theme-toggle-option-active' : 'theme-toggle-option'}
+              onClick={() => setTheme('light')}
+              aria-pressed={theme === 'light'}
+            >
+              <Sun size={16} />
+              Light
+            </button>
+          </div>
         </div>
 
         {error ? <p className="auth-feedback auth-feedback-error profile-feedback">{error}</p> : null}

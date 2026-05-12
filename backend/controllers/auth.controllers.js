@@ -1,6 +1,6 @@
 import bcryptjs from "bcryptjs";
 
-import {generateTokenAndSetCookie} from "../utils/generateTokenAndSetCookie.js";
+import {clearAuthCookie, generateTokenAndSetCookie} from "../utils/generateTokenAndSetCookie.js";
 import User from "../models/user.model.js";
 
 const toSafeUser = (user) => ({
@@ -84,7 +84,7 @@ export const login = async (req, res) => {
 }
 
 export const logout = async (req, res) => {
-    res.clearCookie('auth_token');
+    clearAuthCookie(res);
     res.status(200).json({
         success: true,
         message: "Logged out successfully!",

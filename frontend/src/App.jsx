@@ -5,6 +5,7 @@ import { Toaster } from 'react-hot-toast'
 import ProtectedLayout from './components/ProtectedLayout'
 import { ProtectedRoute, PublicOnlyRoute } from './components/RouteGuards'
 import { AuthProvider } from './context/AuthContext'
+import { ThemeProvider } from './context/ThemeContext'
 import PlayPage from './pages/PlayPage'
 import BlogDetailPage from './pages/BlogDetailPage'
 import BlogPage from './pages/BlogPage'
@@ -23,64 +24,66 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
+      <ThemeProvider>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
 
-          <Route element={<PublicOnlyRoute />}>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-          </Route>
-
-          <Route element={<ProtectedRoute />}>
-            <Route
-              element={
-                <ProtectedLayout
-                  sidebarOpen={sidebarOpen}
-                  onToggle={() => setSidebarOpen(open => !open)}
-                />
-              }
-            >
-              <Route path="/play" element={<PlayPage />} />
-              <Route path="/play/:sessionId" element={<PlayPage />} />
-              <Route path="/history" element={<HistoryPage />} />
-              <Route path="/daily-challenge" element={<DailyChallengePage />} />
-              <Route path="/blogs" element={<BlogPage />} />
-              <Route path="/blogs/:slug" element={<BlogDetailPage />} />
-              <Route path="/leaderboard" element={<LeaderboardPage />} />
-              <Route path="/upgrade" element={<UpgradePage />} />
-              <Route path="/profile" element={<ProfilePage />} />
+            <Route element={<PublicOnlyRoute />}>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
             </Route>
-          </Route>
 
-          <Route path="*" element={<Navigate to="/play" replace />} />
-        </Routes>
-        <Toaster
-          position="top-center"
-          toastOptions={{
-            duration: 2600,
-            style: {
-              background: '#162236',
-              border: '1px solid #243450',
-              color: '#E8EDF5',
-              fontSize: '13px',
-              fontWeight: 600,
-            },
-            success: {
-              iconTheme: {
-                primary: '#2DD4BF',
-                secondary: '#0C2820',
+            <Route element={<ProtectedRoute />}>
+              <Route
+                element={
+                  <ProtectedLayout
+                    sidebarOpen={sidebarOpen}
+                    onToggle={() => setSidebarOpen(open => !open)}
+                  />
+                }
+              >
+                <Route path="/play" element={<PlayPage />} />
+                <Route path="/play/:sessionId" element={<PlayPage />} />
+                <Route path="/history" element={<HistoryPage />} />
+                <Route path="/daily-challenge" element={<DailyChallengePage />} />
+                <Route path="/blogs" element={<BlogPage />} />
+                <Route path="/blogs/:slug" element={<BlogDetailPage />} />
+                <Route path="/leaderboard" element={<LeaderboardPage />} />
+                <Route path="/upgrade" element={<UpgradePage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+              </Route>
+            </Route>
+
+            <Route path="*" element={<Navigate to="/play" replace />} />
+          </Routes>
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              duration: 2600,
+              style: {
+                background: 'var(--toast-bg)',
+                border: '1px solid var(--toast-border)',
+                color: 'var(--toast-text)',
+                fontSize: '13px',
+                fontWeight: 600,
               },
-            },
-            error: {
-              iconTheme: {
-                primary: '#FF4D6D',
-                secondary: '#2B0E18',
+              success: {
+                iconTheme: {
+                  primary: 'var(--success)',
+                  secondary: 'var(--success-bg)',
+                },
               },
-            },
-          }}
-        />
-      </AuthProvider>
+              error: {
+                iconTheme: {
+                  primary: 'var(--error)',
+                  secondary: 'var(--error-bg)',
+                },
+              },
+            }}
+          />
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   )
 }

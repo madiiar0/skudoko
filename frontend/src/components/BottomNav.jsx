@@ -22,9 +22,9 @@ export default function BottomNav() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: isActive ? '#FF7A1A' : '#5A6478',
-            borderTop: isActive ? '2px solid #FF7A1A' : '2px solid transparent',
-            background: isActive ? '#110E06' : 'transparent',
+            color: isActive ? 'var(--nav-active)' : 'var(--nav-inactive)',
+            borderTop: isActive ? '2px solid var(--nav-active)' : '2px solid transparent',
+            background: isActive ? 'var(--nav-active-bg)' : 'transparent',
             transition: 'color 0.15s, background 0.15s',
             textDecoration: 'none',
           })}

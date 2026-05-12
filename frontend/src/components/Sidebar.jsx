@@ -28,8 +28,8 @@ function NavItem({ to, label, icon: Icon, open }) {
         borderRadius: 8,
         fontWeight: isActive ? 600 : 400,
         fontSize: 14,
-        color: isActive ? '#FF7A1A' : hov ? '#C8D0DC' : '#5A6478',
-        background: isActive ? '#1E1508' : hov && !isActive ? '#162236' : 'transparent',
+        color: isActive ? 'var(--nav-active)' : hov ? 'var(--nav-hover-text)' : 'var(--nav-inactive)',
+        background: isActive ? 'var(--nav-active-bg)' : hov && !isActive ? 'var(--nav-hover-bg)' : 'transparent',
         transition: 'background 0.15s, color 0.15s',
         whiteSpace: 'nowrap',
         textDecoration: 'none',
@@ -41,7 +41,7 @@ function NavItem({ to, label, icon: Icon, open }) {
           <Icon
             size={18}
             strokeWidth={isActive ? 2.2 : 1.8}
-            style={{ flexShrink: 0, color: isActive ? '#FF7A1A' : 'inherit' }}
+            style={{ flexShrink: 0, color: isActive ? 'var(--nav-active)' : 'inherit' }}
           />
           {open && <span>{label}</span>}
         </>
@@ -59,8 +59,8 @@ export default function Sidebar({ open, onToggle }) {
         width: open ? 216 : 60,
         minWidth: open ? 216 : 60,
         transition: 'width 0.22s ease, min-width 0.22s ease',
-        background: '#0C1525',
-        borderRight: '1px solid #172238',
+        background: 'var(--bg-sidebar)',
+        borderRight: '1px solid var(--sidebar-border)',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
@@ -76,16 +76,16 @@ export default function Sidebar({ open, onToggle }) {
           alignItems: 'center',
           justifyContent: open ? 'space-between' : 'center',
           padding: open ? '0 14px 0 18px' : '0',
-          borderBottom: '1px solid #172238',
+          borderBottom: '1px solid var(--sidebar-border)',
           flexShrink: 0,
         }}
       >
         {open && (
-          <Link to="/" style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.4px', whiteSpace: 'nowrap', color: '#E8EDF5' }}>
+          <Link to="/" style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.4px', whiteSpace: 'nowrap', color: 'var(--logo-text)' }}>
             Sudok
             <span
               style={{
-                background: 'linear-gradient(135deg, #FF7A1A, #FF3D00)',
+                background: 'linear-gradient(135deg, var(--accent), var(--accent-strong))',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}
@@ -100,15 +100,15 @@ export default function Sidebar({ open, onToggle }) {
           onMouseLeave={() => setToggleHov(false)}
           title={open ? 'Collapse sidebar' : 'Expand sidebar'}
           style={{
-            background: toggleHov ? '#1E2D3E' : '#172236',
-            border: '1px solid #243450',
+            background: toggleHov ? 'var(--btn-bg-hover)' : 'var(--btn-bg)',
+            border: '1px solid var(--btn-border)',
             borderRadius: 6,
             width: 30,
             height: 30,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: toggleHov ? '#C8D0DC' : '#5A6478',
+            color: toggleHov ? 'var(--nav-hover-text)' : 'var(--nav-inactive)',
             flexShrink: 0,
             transition: 'background 0.15s, color 0.15s',
           }}
