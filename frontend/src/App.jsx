@@ -7,11 +7,14 @@ import { ProtectedRoute, PublicOnlyRoute } from './components/RouteGuards'
 import { AuthProvider } from './context/AuthContext'
 import PlayPage from './pages/PlayPage'
 import PlaceholderPage from './pages/PlaceholderPage'
+import DailyChallengePage from './pages/DailyChallengePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import ProfilePage from './pages/ProfilePage'
 import HistoryPage from './pages/HistoryPage'
-import { Trophy, Palette, CalendarDays } from 'lucide-react'
+import LeaderboardPage from './pages/LeaderboardPage'
+import UpgradePage from './pages/UpgradePage'
+import { Palette } from 'lucide-react'
 import './index.css'
 
 export default function App() {
@@ -39,18 +42,13 @@ export default function App() {
               <Route path="/play" element={<PlayPage />} />
               <Route path="/play/:sessionId" element={<PlayPage />} />
               <Route path="/history" element={<HistoryPage />} />
-              <Route
-                path="/daily-challenge"
-                element={<PlaceholderPage title="Daily Challenge" icon={<CalendarDays size={40} />} />}
-              />
+              <Route path="/daily-challenge" element={<DailyChallengePage />} />
               <Route
                 path="/skins"
                 element={<PlaceholderPage title="Skins" icon={<Palette size={40} />} />}
               />
-              <Route
-                path="/leaderboard"
-                element={<PlaceholderPage title="Leaderboard" icon={<Trophy size={40} />} />}
-              />
+              <Route path="/leaderboard" element={<LeaderboardPage />} />
+              <Route path="/upgrade" element={<UpgradePage />} />
               <Route path="/profile" element={<ProfilePage />} />
             </Route>
           </Route>

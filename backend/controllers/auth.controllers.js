@@ -5,6 +5,7 @@ import User from "../models/user.model.js";
 
 const toSafeUser = (user) => ({
     ...user._doc,
+    isPro: !!user.isPro,
     password: undefined,
 });
 
@@ -101,6 +102,46 @@ export const checkAuth = async (req, res) => {
         res.status(200).json({
             success: true,
             message: "Authenticated user fetched successfully!",
+            user: toSafeUser(user),
+        });
+    } catch (error){
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const activatePro = async (req, res) => {
+    try{
+        const user = await User.findById(req.userId);
+        if(!user){
+            throw new Error("Invalid or expired user!");
+        }
+
+        user.isPro = true;
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Pro activated successfully!",
+            user: toSafeUser(user),
+        });
+    } catch (error){
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const cancelPro = async (req, res) => {
+    try{
+        const user = await User.findById(req.userId);
+        if(!user){
+            throw new Error("Invalid or expired user!");
+        }
+
+        user.isPro = false;
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Pro cancelled successfully!",
             user: toSafeUser(user),
         });
     } catch (error){

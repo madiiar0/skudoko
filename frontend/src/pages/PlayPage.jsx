@@ -7,8 +7,11 @@ import CompletionConfetti from './play/CompletionConfetti'
 import NewGameConfirmModal from './play/NewGameConfirmModal'
 import TipAdModal from './play/TipAdModal'
 import { usePlayPageController } from './play/usePlayPageController'
+import { useAuth } from '../hooks/useAuth'
 
 export default function PlayPage() {
+  const { user } = useAuth()
+  const isPro = !!user?.isPro
   const {
     session,
     selected,
@@ -114,6 +117,12 @@ export default function PlayPage() {
       {session.status === 'completed' ? (
         <div className="completion-banner">
           Puzzle solved! Start a New Game to play again.
+        </div>
+      ) : null}
+
+      {!isPro ? (
+        <div className="play-ad-placeholder">
+          Advertisement placeholder. Upgrade to Pro to remove ads.
         </div>
       ) : null}
 

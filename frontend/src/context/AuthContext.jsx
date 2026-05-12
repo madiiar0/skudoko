@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { checkAuth, loginUser, logoutUser, registerUser } from '../api/auth'
+import { activatePro as activateProRequest, cancelPro as cancelProRequest, checkAuth, loginUser, logoutUser, registerUser } from '../api/auth'
 import { AuthContext } from './auth-context'
 
 function isUnauthorized(error) {
@@ -65,6 +65,18 @@ export function AuthProvider({ children }) {
     return response
   }
 
+  async function activatePro() {
+    const response = await activateProRequest()
+    setUser(response?.user || null)
+    return response
+  }
+
+  async function cancelPro() {
+    const response = await cancelProRequest()
+    setUser(response?.user || null)
+    return response
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -75,6 +87,8 @@ export function AuthProvider({ children }) {
         login,
         logout,
         refreshUser,
+        activatePro,
+        cancelPro,
       }}
     >
       {children}

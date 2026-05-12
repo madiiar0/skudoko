@@ -23,3 +23,15 @@ export function logoutUser() {
 export function checkAuth() {
   return apiRequest('/auth/check-auth')
 }
+
+export function activatePro() {
+  return apiRequest('/auth/pro/activate', {
+    method: 'PATCH',
+  })
+}
+
+export function cancelPro() {
+  return apiRequest('/auth/pro/cancel', {
+    method: 'PATCH',
+  })
+}

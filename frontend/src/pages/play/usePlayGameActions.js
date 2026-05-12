@@ -9,6 +9,7 @@ import { DEFAULT_DIFFICULTY, normalizeDifficulty } from '../../utils/difficulty'
 import { isBoardFilled, isSudokuAnswerCorrect, validateMove } from '../../utils/sudoku'
 import { addTipCell, getTipBadge, isTipCell, sanitizeTipsRemaining } from '../../utils/tips'
 import { clearCellCandidates, getCellCandidates, toggleCandidate } from '../../utils/candidates'
+import { useAuth } from '../../hooks/useAuth'
 
 const INPUT_MODES = {
   NORMAL: 'normal',
@@ -79,7 +80,11 @@ export function usePlayGameActions({
   saveCompletedSession,
   saveCurrentSessionBeforeNewGame,
   startNewSession,
+  touchSessionState = touchSession,
+  saveSessionLocally = (updatedSession, options) => saveLocalSession(userId, updatedSession, options),
 }) {
+  const { user } = useAuth()
+  const isPro = !!user?.isPro
   const [selected, setSelected] = useState(null)
   const [errorCell, setErrorCell] = useState(null)
   const [isCheckingAnswer, setIsCheckingAnswer] = useState(false)
@@ -91,7 +96,7 @@ export function usePlayGameActions({
   const [inputMode, setInputMode] = useState(INPUT_MODES.NORMAL)
 
   const hasEditableSelection = !!selected && !isCellLocked(session, selected[0], selected[1]) && !viewOnly
-  const tipBadge = getTipBadge(session?.tipsRemaining)
+  const tipBadge = isPro ? 'infinity' : getTipBadge(session?.tipsRemaining)
 
   useEffect(() => {
     let isActive = true
@@ -122,6 +127,22 @@ export function usePlayGameActions({
     return undefined
   }, [errorCell])
 
+  useEffect(() => {
+    let isActive = true
+
+    if (isPro) {
+      Promise.resolve().then(() => {
+        if (isActive) {
+          setShowTipAd(false)
+        }
+      })
+    }
+
+    return () => {
+      isActive = false
+    }
+  }, [isPro])
+
   function handleSelect(r, c) {
     setSelected([r, c])
     if (errorCell) {
@@ -144,10 +165,10 @@ export function usePlayGameActions({
         return prev
       }
 
-      const updatedSession = touchSession(prev, {
+      const updatedSession = touchSessionState(prev, {
         candidates: toggleCandidate(prev.candidates, r, c, num),
       })
-      saveLocalSession(userId, updatedSession, { pendingSync: true })
+      saveSessionLocally(updatedSession, { pendingSync: true })
       return updatedSession
     })
     setErrorCell(null)
@@ -172,7 +193,7 @@ export function usePlayGameActions({
       setErrorCell([r, c])
       setSession(prev => (
         prev
-          ? touchSession(prev, { mistakeCount: (prev.mistakeCount || 0) + 1 })
+          ? touchSessionState(prev, { mistakeCount: (prev.mistakeCount || 0) + 1 })
           : prev
       ))
       return
@@ -183,7 +204,7 @@ export function usePlayGameActions({
       const historyEntry = { r, c, prev: prev.board[r][c], next: num, at: new Date().toISOString() }
       newBoard[r][c] = num
 
-      return touchSession(prev, {
+      return touchSessionState(prev, {
         board: newBoard,
         candidates: clearCellCandidates(prev.candidates, r, c),
         history: [...prev.history, historyEntry],
@@ -235,10 +256,10 @@ export function usePlayGameActions({
           return prev
         }
 
-        const updatedSession = touchSession(prev, {
+        const updatedSession = touchSessionState(prev, {
           candidates: clearCellCandidates(prev.candidates, r, c),
         })
-        saveLocalSession(userId, updatedSession, { pendingSync: true })
+        saveSessionLocally(updatedSession, { pendingSync: true })
         return updatedSession
       })
       setErrorCell(null)
@@ -249,7 +270,7 @@ export function usePlayGameActions({
       const newBoard = prev.board.map(row => [...row])
       newBoard[r][c] = 0
 
-      return touchSession(prev, {
+      return touchSessionState(prev, {
         board: newBoard,
         candidates: clearCellCandidates(prev.candidates, r, c),
         history: [...prev.history, { r, c, prev: prev.board[r][c], next: 0, at: new Date().toISOString() }],
@@ -272,13 +293,13 @@ export function usePlayGameActions({
       }
 
       if (!last) {
-        return history.length === prev.history.length ? prev : touchSession(prev, { history })
+        return history.length === prev.history.length ? prev : touchSessionState(prev, { history })
       }
 
       const newBoard = prev.board.map(row => [...row])
       newBoard[last.r][last.c] = last.prev
 
-      return touchSession(prev, {
+      return touchSessionState(prev, {
         board: newBoard,
         candidates: clearCellCandidates(prev.candidates, last.r, last.c),
         history,
@@ -304,7 +325,7 @@ export function usePlayGameActions({
 
     setSession(prev => (
       prev?.sessionId === session.sessionId
-        ? touchSession(prev, {
+        ? touchSessionState(prev, {
             board: nextBoard,
             tipCells: addTipCell(prev.tipCells, tipCell.row, tipCell.col),
             tipsRemaining: nextTipsRemaining,
@@ -324,6 +345,11 @@ export function usePlayGameActions({
 
     if (getEligibleTipCells(session).length === 0) {
       toast.error('No empty cells are available for a tip.')
+      return
+    }
+
+    if (isPro) {
+      revealTip(sanitizeTipsRemaining(session.tipsRemaining))
       return
     }
 
@@ -358,12 +384,12 @@ export function usePlayGameActions({
 
     setIsCheckingAnswer(true)
 
-    const completedSession = touchSession(session, {
+    const completedSession = touchSessionState(session, {
       status: 'completed',
       completedAt: new Date().toISOString(),
     })
 
-    saveLocalSession(userId, completedSession, { pendingSync: true })
+    saveSessionLocally(completedSession, { pendingSync: true })
     setSession(completedSession)
     setSelected(null)
     setErrorCell(null)
@@ -417,7 +443,7 @@ export function usePlayGameActions({
     errorCell,
     isCheckingAnswer,
     showNewGameConfirm,
-    showTipAd,
+    showTipAd: !isPro && showTipAd,
     isStartingNewGame,
     isExploding,
     selectedDifficulty,

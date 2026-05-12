@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { CheckCircle2, Clock3, Pencil, RefreshCw, Trash2 } from 'lucide-react'
+import { CheckCircle2, Clock3, Pencil, Trash2 } from 'lucide-react'
 
 import PageTopbar from '../components/PageTopbar'
 import { deleteGameSession, renameGameSession } from '../api/sessions'

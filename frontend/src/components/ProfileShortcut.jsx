@@ -2,8 +2,12 @@ import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { UserCircle2 } from 'lucide-react'
 
+import { useAuth } from '../hooks/useAuth'
+
 export default function ProfileShortcut() {
+  const { user } = useAuth()
   const [hovered, setHovered] = useState(false)
+  const isPro = !!user?.isPro
 
   return (
     <NavLink
@@ -24,9 +28,15 @@ export default function ProfileShortcut() {
         border: `1px solid ${isActive ? '#5A330E' : hovered ? '#35506A' : '#243450'}`,
         boxShadow: hovered || isActive ? '0 10px 28px rgba(0, 0, 0, 0.2)' : 'none',
         transition: 'background 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s',
+        position: 'relative',
       })}
     >
-      {({ isActive }) => <UserCircle2 size={22} strokeWidth={isActive ? 2.3 : 2} />}
+      {({ isActive }) => (
+        <>
+          {isPro ? <span className="profile-pro-badge">Pro</span> : null}
+          <UserCircle2 size={22} strokeWidth={isActive ? 2.3 : 2} />
+        </>
+      )}
     </NavLink>
   )
 }

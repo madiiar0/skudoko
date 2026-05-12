@@ -6,8 +6,8 @@ const NAV_ITEMS = [
   { to: '/play', label: 'Play', icon: Gamepad2 },
   { to: '/history', label: 'History', icon: History },
   { to: '/daily-challenge', label: 'Daily Challenge', icon: CalendarDays },
-  { to: '/skins', label: 'Skins', icon: Palette },
   { to: '/leaderboard', label: 'Leaderboard', icon: Trophy },
+  { to: '/skins', label: 'Skins', icon: Palette },
 ]
 
 function NavItem({ to, label, icon: Icon, open }) {

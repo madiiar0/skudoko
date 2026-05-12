@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { CheckCircle2, Eraser, Undo2, Lightbulb, RefreshCw } from 'lucide-react'
+import { CheckCircle2, Eraser, Undo2, Lightbulb, RefreshCw, InfinityIcon } from 'lucide-react'
 
 function IconBtn({ icon: Icon, label, onClick, disabled, badge }) {
   const [hov, setHov] = useState(false)
@@ -55,7 +55,7 @@ function IconBtn({ icon: Icon, label, onClick, disabled, badge }) {
             zIndex: 2,
           }}
         >
-          {badge}
+          {badge === 'infinity' ? <InfinityIcon size={12} strokeWidth={2.6} /> : badge}
         </span>
       ) : null}
       <Icon size={16} strokeWidth={2} />
@@ -196,6 +196,7 @@ export default function NumberPanel({
   tipBadge,
   inputMode = 'normal',
   onInputModeChange,
+  showNewGame = true,
   disabled = false,
   checking = false,
 }) {
@@ -229,11 +230,13 @@ export default function NumberPanel({
         variant="secondary"
       />
 
-      <WideActionButton
-        icon={RefreshCw}
-        label="New Game"
-        onClick={onNewGame}
-      />
+      {showNewGame ? (
+        <WideActionButton
+          icon={RefreshCw}
+          label="New Game"
+          onClick={onNewGame}
+        />
+      ) : null}
     </div>
   )
 }

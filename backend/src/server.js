@@ -5,6 +5,7 @@ import cors from "cors";
 
 import { connectDB } from "../db/connectDB.js";
 import authRoutes from "../routes/auth.route.js";
+import dailyChallengeRoutes from "../routes/dailyChallenge.route.js";
 import gameSessionRoutes from "../routes/gameSession.route.js";
 
 dotenv.config();
@@ -23,6 +24,7 @@ app.use(
 
 app.use("/api/auth", authRoutes);
 app.use("/api/sessions", gameSessionRoutes);
+app.use("/api/daily-challenge", dailyChallengeRoutes);
 
 const startServer = async () => {
   await connectDB();
