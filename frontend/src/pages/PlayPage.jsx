@@ -45,7 +45,7 @@ export default function PlayPage() {
 
   if (isLoading && !session) {
     return (
-      <div className="play-page">
+      <div className="play-page sudoku-play-page">
         <PageTopbar title="Loading game" subtitle="Restoring your latest saved Sudoku session." />
         <div className="history-empty">Loading saved game...</div>
       </div>
@@ -54,7 +54,7 @@ export default function PlayPage() {
 
   if (loadError) {
     return (
-      <div className="play-page">
+      <div className="play-page sudoku-play-page">
         <PageTopbar title="Game unavailable" subtitle="That saved game could not be loaded for this account." />
         <div className="history-empty">
           <h2>Unable to open session</h2>
@@ -72,7 +72,7 @@ export default function PlayPage() {
   }
 
   return (
-    <div className="play-page">
+    <div className="play-page sudoku-play-page">
       <PageTopbar
         title="Play the Sudoku"
         subtitle={

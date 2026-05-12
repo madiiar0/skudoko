@@ -319,7 +319,6 @@ a {
 .play-ad-placeholder {
   width: min(100%, 980px);
   min-height: 80px;
-  margin: 28px auto 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -334,6 +333,7 @@ a {
   font-weight: 750;
   letter-spacing: 0.2px;
   text-align: center;
+  margin: 28px auto 10px;
 }
 
 .daily-timer-row {
@@ -1272,7 +1272,7 @@ a {
   .play-ad-placeholder {
     min-height: 80px;
     margin-top: 18px;
-    margin-bottom: 0;
+    margin-bottom: 18px;
   }
 
   .daily-timer-row {
@@ -1299,6 +1299,22 @@ a {
     order: 1;
     justify-content: flex-start;
     flex-wrap: wrap;
+  }
+
+  .sudoku-play-page .page-topbar {
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+  }
+
+  .sudoku-play-page .page-topbar-copy {
+    display: none;
+  }
+
+  .sudoku-play-page .page-topbar-actions {
+    width: 100%;
+    justify-content: flex-end;
+    margin-left: auto;
   }
 
   .upgrade-topbar-cta {
