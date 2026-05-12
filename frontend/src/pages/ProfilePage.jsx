@@ -126,7 +126,7 @@ export default function ProfilePage() {
             </button>
           ) : null}
 
-          <button className="profile-logout" type="button" onClick={handleLogout} disabled={submitting}>
+          <button className="profile-secondary-action" type="button" onClick={handleLogout} disabled={submitting}>
             {submitting ? 'Logging out...' : 'Log Out'}
           </button>
         </div>

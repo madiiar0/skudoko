@@ -1,28 +1,9 @@
 import { Link } from 'react-router-dom'
-import { BadgeCheck, Brain, CalendarDays, Gamepad2, Lightbulb, Sparkles } from 'lucide-react'
 
 import { useAuth } from '../hooks/useAuth'
 
-const VALUE_POINTS = [
-  {
-    icon: Gamepad2,
-    title: 'Focused gameplay',
-    text: 'A clean board with keyboard input, notes, undo, mistakes, tips, and reliable progress saving.',
-  },
-  {
-    icon: CalendarDays,
-    title: 'Daily Challenge',
-    text: 'Play the shared puzzle, track your time, and compare results on the leaderboard.',
-  },
-  {
-    icon: Brain,
-    title: 'AI Coach',
-    text: 'Pro players can ask for board-aware hints based on the current puzzle, notes, and progress.',
-  },
-]
-
 export default function LandingPage() {
-  const { isAuthenticated, user } = useAuth()
+  const { isAuthenticated } = useAuth()
 
   return (
     <main className="landing-page">
@@ -33,25 +14,25 @@ export default function LandingPage() {
         <div className="landing-nav-actions">
           {!isAuthenticated ? (
             <Link className="landing-nav-link" to="/login">
-              Log in
+              Sign In
             </Link>
           ) : null}
           <Link className="landing-nav-button" to="/play">
-            {isAuthenticated ? 'Open App' : 'Start Playing'}
+            {isAuthenticated ? 'Open App' : 'Sign Up'}
           </Link>
         </div>
       </header>
 
       <section className="landing-hero">
         <div className="landing-hero-copy">
-          <span className="landing-kicker">
-            <Sparkles size={15} />
-            Modern Sudoku
-          </span>
-          <h1>Sudoku that feels sharp, focused, and worth coming back to.</h1>
+          <h1>
+            Think Sharper.
+            <br />
+            Solve Better.
+          </h1>
           <p>
             Play clean puzzles, build better solving habits, compete in Daily Challenge,
-            and use Pro tools like AI Coach when you want deeper guidance.
+            and use Pro tools like <strong>AI Coach</strong> when you want deeper guidance.
           </p>
           <div className="landing-cta-row">
             <Link className="landing-primary-cta" to="/play">
@@ -63,68 +44,8 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <div className="landing-board-card" aria-label="Sudoku app preview">
-          <div className="landing-board-top">
-            <span>Medium</span>
-            <strong>Daily run</strong>
-          </div>
-          <div className="landing-mini-board">
-            {[5, 0, 0, 0, 8, 4, 0, 0, 2, 0, 7, 0, 5, 0, 0, 8, 0, 0, 9, 0, 4, 0, 0, 2, 0, 1, 0, 0, 5, 0, 8, 0, 0, 0, 2, 0].map((value, index) => (
-              <span key={`${value}-${index}`} className={value ? 'landing-mini-cell-filled' : ''}>
-                {value || ''}
-              </span>
-            ))}
-          </div>
-          <div className="landing-preview-meta">
-            <span>Notes</span>
-            <span>Mistakes: 1</span>
-            <span>Tips used: 0</span>
-          </div>
-        </div>
-      </section>
-
-      <section className="landing-feature-row">
-        {VALUE_POINTS.map(point => {
-          const Icon = point.icon
-
-          return (
-            <article key={point.title} className="landing-feature-card">
-              <Icon size={20} />
-              <h2>{point.title}</h2>
-              <p>{point.text}</p>
-            </article>
-          )
-        })}
-      </section>
-
-      <section className="landing-pro-strip">
-        <div>
-          <span className="landing-pro-pill">
-            <BadgeCheck size={14} />
-            Pro
-          </span>
-          <h2>Go Pro for a cleaner, smarter Sudoku setup.</h2>
-          <p>
-            Remove ads, unlock unlimited tips, show your Pro badge, and use AI Coach
-            for personalized help while you solve.
-          </p>
-        </div>
-        <Link className="landing-primary-cta" to="/upgrade">
-          {user?.isPro ? 'Manage Pro' : 'Upgrade to Pro'}
-        </Link>
-      </section>
-
-      <section className="landing-final-cta">
-        <Lightbulb size={22} />
-        <h2>Ready for your next puzzle?</h2>
-        <p>Start a saved game, resume your progress, or jump into today’s challenge.</p>
-        <div className="landing-cta-row">
-          <Link className="landing-primary-cta" to="/play">
-            Start Playing
-          </Link>
-          <Link className="landing-secondary-cta" to="/leaderboard">
-            View Leaderboard
-          </Link>
+        <div className="landing-board-visual">
+          <img src="/board-pic.png" alt="Sudoku board preview" />
         </div>
       </section>
     </main>
