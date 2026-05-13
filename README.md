@@ -4,7 +4,7 @@
 
 **Skudoko is a modern Sudoku platform for people who want more than a blank grid.**
 
-It combines clean puzzle play, progress tracking, daily competition, learning content, and a Pro-only AI Coach into one full-stack product. The goal is simple: help players think more clearly, solve with less guessing, and come back because every session feels intentional.
+It combines clean puzzle play, progress tracking, daily competition, learning content, and AI Coach into one full-stack product. The goal is simple: help players think more clearly, solve with less guessing, and come back because every session feels premium.
 
 Skudoko is built for the moment when Sudoku stops being just a time-killer and becomes a small daily thinking ritual.
 
@@ -13,20 +13,28 @@ Skudoko is built for the moment when Sudoku stops being just a time-killer and b
 
 ---
 
-## What Was Built
+## What Was Built and Product Highlights
 
 Skudoko is a full-stack Sudoku web app with a polished product layer around the game itself.
 
-At its core, it supports classic Sudoku gameplay with difficulty-based puzzle generation, a stored solution for accurate checking, keyboard and on-screen number input, undo history, candidate notes, tips, mistake tracking, and persistent game sessions.
+At its core, it supports classic Sudoku gameplay:
+- difficulty-based puzzle generation
+- accurate solution checking
+- keyboard and on-screen number input
+- undo history
+- candidate notes
+- tips
+- mistake tracking
+- persistent game sessions.
 
 Around that core, it adds the pieces that make the app feel like a real product:
 
 - Account-based authentication and protected routes.
 - Local-first game saving with backend sync.
+- AI Coach that understands the current board, notes, tips, mistakes, and progress.
+- Pro simulation with Pro badge, no ad placeholder, and unlimited tips.
 - Game History with resume, rename, delete, completed-game view-only mode.
 - Daily Challenge with timer, pause, penalties, one official attempt, and leaderboard.
-- Pro simulation with Pro badge, no ad placeholder, and unlimited tips.
-- Pro-only AI Coach that understands the current board, notes, tips, mistakes, and progress.
 - Blogs/learning section with free and Pro-gated Sudoku articles.
 - Dark and light themes persisted locally.
 - Vercel-ready frontend and backend deployment configuration.
@@ -49,41 +57,23 @@ Skudoko is designed for several kinds of Sudoku players:
 
 ## Why It Is Valuable
 
-Most Sudoku apps stop at the board. Skudoko treats Sudoku like a product experience.
+Most Sudoku apps stop at the board. Skudoko treats Sudoku like a product experience:
 
-It helps users avoid random guessing by giving them notes, mistake feedback, tips, and educational content. It keeps progress safe across refreshes and devices through local-first saving and backend sync. It adds motivation through Daily Challenge and leaderboard. And it creates room for future monetization through a Pro plan, AI Coach, premium articles, and ad removal.
+- It helps users avoid random guessing by giving them notes, mistake feedback, tips, and educational content.
+- It keeps progress safe across refreshes and devices through local-first saving and backend sync.
+- It adds motivation through Daily Challenge and leaderboard.
+- It creates room for future monetization through a Pro plan, AI Coach, premium articles, and ad removal.
 
 The result is not just a puzzle clone. It is a small learning-and-competition platform wrapped around Sudoku.
 
 ---
 
-## Product Highlights
-
-| Highlight | Why it matters |
-|---|---|
-| **Candidate mode** | Lets players reason through possibilities instead of guessing. |
-| **Solution-backed checking** | Mistakes and final answers are checked against the stored puzzle solution, not loose row/column guesses. |
-| **Local-first persistence** | Progress survives refreshes, route changes, and temporary backend failures. |
-| **Daily Challenge** | Gives users a shared puzzle, timer, penalties, and a reason to return. |
-| **Leaderboard** | Turns a solo puzzle into a lightweight competition. |
-| **AI Coach** | Gives Pro users contextual help based on the current board state. |
-| **Blogs** | Adds a learning layer for rules, routines, and advanced strategy. |
-| **Dark/light themes** | Makes the app feel comfortable across different environments. |
-
----
-
 ## Visual Tour
 
-| Landing | Play |
+|  |  |
 |---|---|
 | ![Landing page](frontend/src/assets/landing-page.png) | ![Play page](frontend/src/assets/play-page.png) |
-
-| Leaderboard | AI Coach |
-|---|---|
 | ![Leaderboard](frontend/src/assets/leader-board.png) | ![AI Coach](frontend/src/assets/ai-coach.png) |
-
-| Blogs | Blog Detail |
-|---|---|
 | ![Blogs page](frontend/src/assets/blogs.png) | ![Blog detail](frontend/src/assets/blogs-page.png) |
 
 ---
@@ -140,19 +130,16 @@ The result is not just a puzzle clone. It is a small learning-and-competition pl
 
 ---
 
-## Tech Stack
+## Main Technologies Used
 
-| Area | Technology |
-|---|---|
-| Frontend | React 19, Vite, React Router |
-| Styling | CSS, CSS variables, dark/light theme system |
-| UI libraries | lucide-react, react-hot-toast, react-confetti-explosion |
-| Sudoku generation | sudoku-gen |
-| Backend | Node.js, Express |
-| Database | MongoDB, Mongoose |
-| Auth | JWT in HTTP-only cookies, bcrypt password hashing |
-| AI | OpenAI backend integration |
-| Deployment | Vercel frontend and Vercel serverless backend |
+![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-5FA04E?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)
 
 ---
 
